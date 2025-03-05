@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/images/(.*)",
-      "destination": "/public/images/$1"
+      "destination": "/images/$1"
     }
   ]
 }
