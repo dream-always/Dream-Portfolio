@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心境 - 冥想应用原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            light: '#9575CD',
+                            DEFAULT: '#7E57C2',
+                            dark: '#5E35B1',
+                        },
+                        secondary: {
+                            light: '#81D4FA',
+                            DEFAULT: '#4FC3F7',
+                            dark: '#039BE5',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .back-button {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(126, 87, 194, 0.9);
+            color: white;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(126, 87, 194, 0.4);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(126, 87, 194, 0.5);
+            background: rgba(94, 53, 177, 0.95);
+        }
+        
+        .back-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(126, 87, 194, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .back-button {
+                top: 20px;
+                left: 20px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-5">
+    <!-- 添加返回按钮 -->
+    <a href="uiux.html" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        <span>返回作品集</span>
+    </a>
+
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">心境 - 冥想应用原型设计</h1>
+    
+    <div class="flex flex-wrap justify-center gap-8">
+        <!-- 欢迎/登录页面 -->
+        <div>
+            <h3 class="text-base text-center text-gray-600 mb-4">欢迎/登录页面</h3>
+            <div class="w-[375px] h-[812px] bg-gradient-to-br from-primary-light to-primary rounded-[40px] overflow-hidden shadow-xl flex flex-col items-center justify-center relative">
+                <div class="w-[120px] h-[120px] bg-white rounded-[30px] flex items-center justify-center mb-8 shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1508672019048-805c876b67e2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fHplbiUyMHN0b25lc3xlbnwwfHwwfHx8MA%3D%3D" class="w-20 h-20 object-cover rounded-[20px]" alt="心境应用图标">
+                </div>
+                <div class="text-4xl font-bold text-white mb-2">心境</div>
+                <div class="text-lg text-white/90 mb-16 text-center px-8">每天十分钟，平静内心世界</div>
+                <div class="bg-white text-primary font-bold py-4 px-16 rounded-full mb-5 shadow-md">登录</div>
+                <div class="text-white/90">新用户？点击注册</div>
+            </div>
+        </div>
+        
+        <!-- 主页/发现页 -->
+        <div>
+            <h3 class="text-base text-center text-gray-600 mb-4">主页/发现页</h3>
+            <div class="w-[375px] h-[812px] bg-white rounded-[40px] overflow-hidden shadow-xl relative">
+                <div class="h-[44px] flex justify-between items-center px-5 absolute top-0 left-0 right-0 z-10">
+                    <div class="font-bold">9:41</div>
+                    <div class="flex gap-1">●●●</div>
+                </div>
+                
+                <div class="pt-[44px]">
+                    <div class="p-5">
+                        <div class="text-2xl font-bold mb-1">晚上好，Dream</div>
+                        <div class="text-gray-500 mb-5">5月15日，星期三</div>
+                        <div class="flex items-center bg-gray-100 rounded-xl p-3 mb-5">
+                            <div class="w-5 h-5 bg-gray-300 rounded-full mr-3"></div>
+                            <div class="text-gray-500">搜索冥想课程</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mx-5 bg-gradient-to-r from-secondary-light to-secondary rounded-xl p-5 flex flex-col justify-between h-[180px] mb-5">
+                        <div>
+                            <div class="text-2xl font-bold text-white">今日推荐</div>
+                            <div class="text-white/90 text-sm mb-2">放松身心的深度睡眠冥想</div>
+                        </div>
+                        <div class="bg-white/20 w-[120px] py-2 rounded-full text-white text-center font-bold">开始冥想</div>
+                    </div>
+                    
+                    <div class="px-5">
+                        <div class="text-lg font-bold mb-4">冥想分类</div>
+                        <div class="flex gap-4 overflow-x-auto pb-4">
+                            <div class="min-w-[100px] h-[100px] bg-gray-100 rounded-xl flex flex-col items-center justify-center">
+                                <img src="https://img.freepik.com/free-photo/silhouette-woman-meditating-beach-sunset_53876-161846.jpg" class="w-10 h-10 rounded-full object-cover mb-2" alt="睡眠冥想">
+                                <div class="text-xs text-gray-700">睡眠</div>
+                            </div>
+                            <div class="min-w-[100px] h-[100px] bg-gray-100 rounded-xl flex flex-col items-center justify-center">
+                                <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVhY2V8ZW58MHx8MHx8fDA%3D" class="w-10 h-10 rounded-full object-cover mb-2" alt="减压冥想">
+                                <div class="text-xs text-gray-700">减压</div>
+                            </div>
+                            <div class="min-w-[100px] h-[100px] bg-gray-100 rounded-xl flex flex-col items-center justify-center">
+                                <img src="https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Zm9jdXN8ZW58MHx8MHx8fDA%3D" class="w-10 h-10 rounded-full object-cover mb-2" alt="专注冥想">
+                                <div class="text-xs text-gray-700">专注</div>
+                            </div>
+                            <div class="min-w-[100px] h-[100px] bg-gray-100 rounded-xl flex flex-col items-center justify-center">
+                                <img src="https://images.unsplash.com/photo-1605812860427-4024433a70fd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZW1vdGlvbnxlbnwwfHwwfHx8MA%3D%3D" class="w-10 h-10 rounded-full object-cover mb-2" alt="情绪冥想">
+                                <div class="text-xs text-gray-700">情绪</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="px-5 mt-5">
+                        <div class="text-lg font-bold mb-4">热门课程</div>
+                        <div class="flex bg-gray-50 rounded-xl overflow-hidden mb-4">
+                            <img src="https://images.unsplash.com/photo-1545389336-cf090694435e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fG1lZGl0YXRpb258ZW58MHx8MHx8fDA%3D" class="w-[80px] h-[80px] object-cover" alt="7天入门冥想">
+                            <div class="p-3">
+                                <div class="font-bold mb-1">7天入门冥想</div>
+                                <div class="text-gray-500 text-xs flex gap-3">
+                                    <div>7集</div>
+                                    <div>5-10分钟/集</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex bg-gray-50 rounded-xl overflow-hidden mb-4">
+                            <img src="https://images.unsplash.com/photo-1520808663317-647b476a81b9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmVsYXh8ZW58MHx8MHx8fDA%3D" class="w-[80px] h-[80px] object-cover" alt="缓解压力与焦虑">
+                            <div class="p-3">
+                                <div class="font-bold mb-1">缓解压力与焦虑</div>
+                                <div class="text-gray-500 text-xs flex gap-3">
+                                    <div>5集</div>
+                                    <div>10-15分钟/集</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex bg-gray-50 rounded-xl overflow-hidden mb-4">
+                            <img src="https://images.unsplash.com/photo-1517021897933-0e0319cfbc28?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9jdXN8ZW58MHx8MHx8fDA%3D" class="w-[80px] h-[80px] object-cover" alt="提升专注力">
+                            <div class="p-3">
+                                <div class="font-bold mb-1">提升专注力</div>
+                                <div class="text-gray-500 text-xs flex gap-3">
+                                    <div>6集</div>
+                                    <div>10分钟/集</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="h-[83px] bg-white border-t border-gray-100 absolute bottom-0 left-0 right-0 flex justify-around items-center pb-5">
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-primary rounded-full mb-1"></div>
+                        <div class="text-xs text-primary font-bold">发现</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
+                        <div class="text-xs text-gray-500">冥想</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
+                        <div class="text-xs text-gray-500">统计</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
+                        <div class="text-xs text-gray-500">社区</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
+                        <div class="text-xs text-gray-500">我的</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 课程详情页 -->
+        <div>
+            <h3 class="text-base text-center text-gray-600 mb-4">课程详情页</h3>
+            <div class="w-[375px] h-[812px] bg-white rounded-[40px] overflow-hidden shadow-xl relative">
+                <div class="h-[44px] flex justify-between items-center px-5 absolute top-0 left-0 right-0 z-10">
+                    <div class="font-bold">9:41</div>
+                    <div class="flex gap-1">●●●</div>
+                </div>
+                
+                <div class="pt-[44px]">
+                    <div class="h-[250px] bg-gradient-to-r from-purple-300 to-primary p-5 flex flex-col justify-end" style="background-image: url('https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bWVkaXRhdGlvbnxlbnwwfHwwfHx8MA%3D%3D'); background-size: cover; background-position: center;">
+                        <div class="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center mb-10 text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                            </svg>
+                        </div>
+                        <div class="text-3xl font-bold text-white mb-1">7天入门冥想</div>
+                        <div class="flex gap-4 text-white/80 mb-4">
+                            <div>7集</div>
+                            <div>5-10分钟/集</div>
+                        </div>
+                        <div class="text-white/90 mb-5">适合冥想初学者的引导课程，帮助你建立日常冥想习惯。</div>
+                        <div class="flex gap-2">
+                            <div class="bg-white/20 px-4 py-1 rounded-full text-xs text-white">初学者</div>
+                            <div class="bg-white/20 px-4 py-1 rounded-full text-xs text-white">正念冥想</div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5">
+                        <div class="text-lg font-bold mb-4">课程内容</div>
+                        <div>
+                            <div class="flex items-center py-4 border-b border-gray-100">
+                                <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-4">1</div>
+                                <div class="flex-1">
+                                    <div class="font-bold mb-1">认识冥想</div>
+                                    <div class="text-gray-500 text-xs">5分钟</div>
+                                </div>
+                                <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-5 h-5">
+                                        <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex items-center py-4 border-b border-gray-100">
+                                <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-4">2</div>
+                                <div class="flex-1">
+                                    <div class="font-bold mb-1">专注呼吸</div>
+                                    <div class="text-gray-500 text-xs">7分钟</div>
+                                </div>
+                                <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-5 h-5">
+                                        <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex items-center py-4 border-b border-gray-100">
+                                <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-4">3</div>
+                                <div class="flex-1">
+                                    <div class="font-bold mb-1">身体扫描</div>
+                                    <div class="text-gray-500 text-xs">8分钟</div>
+                                </div>
+                                <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-5 h-5">
+                                        <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex items-center py-4 border-b border-gray-100">
+                                <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-4">4</div>
+                                <div class="flex-1">
+                                    <div class="font-bold mb-1">接纳情绪</div>
+                                    <div class="text-gray-500 text-xs">10分钟</div>
+                                </div>
+                                <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-5 h-5">
+                                        <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 冥想计时器页面 -->
+        <div>
+            <h3 class="text-base text-center text-gray-600 mb-4">冥想计时器页面</h3>
+            <div class="w-[375px] h-[812px] bg-gradient-to-b from-primary-dark to-indigo-800 rounded-[40px] overflow-hidden shadow-xl relative flex flex-col items-center pt-20">
+                <div class="h-[44px] flex justify-between items-center px-5 absolute top-0 left-0 right-0 z-10">
+                    <div class="font-bold text-white">9:41</div>
+                    <div class="flex gap-1 text-white">●●●</div>
+                </div>
+                
+                <div class="text-2xl font-bold text-white mb-10">专注呼吸冥想</div>
+                <div class="w-[300px] h-[300px] bg-white/10 rounded-full flex items-center justify-center mb-12 relative">
+                    <div class="absolute w-[280px] h-[280px] rounded-full border-[10px] border-white border-t-transparent transform -rotate-45"></div>
+                    <div class="text-5xl font-bold text-white">08:42</div>
+                </div>
+                
+                <div class="flex gap-8">
+                    <div class="w-[60px] h-[60px] bg-white/20 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953l7.108-4.062A1.125 1.125 0 0121 8.688v8.123zM11.25 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953L9.567 7.71a1.125 1.125 0 011.683.977v8.123z" />
+                        </svg>
+                    </div>
+                    <div class="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="black" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                        </svg>
+                    </div>
+                    <div class="w-[60px] h-[60px] bg-white/20 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.81V8.688zM12.75 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z" />
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="text-white/80 italic text-center px-10 mt-16">
+                    "呼吸是连接身体与心灵的桥梁，专注于呼吸，找回内心的平静。"
+                </div>
+            </div>
+        </div>
+        
+        <!-- 个人统计页面 -->
+        <div>
+            <h3 class="text-base text-center text-gray-600 mb-4">个人统计页面</h3>
+            <div class="w-[375px] h-[812px] bg-white rounded-[40px] overflow-hidden shadow-xl relative">
+                <div class="h-[44px] flex justify-between items-center px-5 absolute top-0 left-0 right-0 z-10">
+                    <div class="font-bold">9:41</div>
+                    <div class="flex gap-1">●●●</div>
+                </div>
+                
+                <div class="pt-[44px] p-5">
+                    <div class="text-2xl font-bold mb-5">冥想统计</div>
+                    <div class="flex gap-4 mb-5">
+                        <div class="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                            <div class="text-2xl font-bold mb-1">32</div>
+                            <div class="text-xs text-gray-500">总天数</div>
+                        </div>
+                        <div class="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                            <div class="text-2xl font-bold mb-1">5h 12m</div>
+                            <div class="text-xs text-gray-500">总时长</div>
+                        </div>
+                        <div class="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                            <div class="text-2xl font-bold mb-1">7</div>
+                            <div class="text-xs text-gray-500">当前连续</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-5 rounded-xl mb-5">
+                        <div class="font-bold mb-4">每周冥想时长</div>
+                        <div class="h-[200px] bg-gray-100 rounded-lg overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hhcnR8ZW58MHx8MHx8fDA%3D" class="w-full h-full object-cover" alt="冥想统计图表">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-5 rounded-xl">
+                        <div class="font-bold mb-4">5月冥想记录</div>
+                        <div class="grid grid-cols-7 gap-2">
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-gray-200"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-gray-200"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-gray-200"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-primary"></div>
+                            <div class="aspect-square rounded-full bg-gray-200"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="h-[83px] bg-white border-t border-gray-100 absolute bottom-0 left-0 right-0 flex justify-around items-center pb-5">
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
+                        <div class="text-xs text-gray-500">发现</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
+                        <div class="text-xs text-gray-500">冥想</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-primary rounded-full mb-1"></div>
+                        <div class="text-xs text-primary font-bold">统计</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
+                        <div class="text-xs text-gray-500">社区</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
+                        <div class="text-xs text-gray-500">我的</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 社区页面 -->
+        <div>
+            <h3 class="text-base text-center text-gray-600 mb-4">社区页面</h3>
+            <div class="w-[375px] h-[812px] bg-white rounded-[40px] overflow-hidden shadow-xl relative">
+                <div class="h-[44px] flex justify-between items-center px-5 absolute top-0 left-0 right-0 z-10">
+                    <div class="font-bold">9:41</div>
+                    <div class="flex gap-1">●●●</div>
+                </div>
+                
+                <div class="pt-[44px]">
+                    <div class="px-5 py-4 flex justify-between items-center">
+                        <div class="text-2xl font-bold">社区</div>
+                        <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">+</div>
+                    </div>
+                    
+                    <div class="flex border-b border-gray-100 px-5 mb-4">
+                        <div class="px-4 py-2 border-b-2 border-primary text-primary font-bold mr-5">关注</div>
+                        <div class="px-4 py-2 text-gray-500 mr-5">推荐</div>
+                        <div class="px-4 py-2 text-gray-500">热门</div>
+                    </div>
+                    
+                    <div class="px-5 py-4 border-b border-gray-100">
+                        <div class="flex items-center mb-4">
+                            <img src="https://images.unsplash.com/photo-1541647376583-8934aaf3448a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D" class="w-[50px] h-[50px] rounded-full mr-4 object-cover" alt="用户头像">
+                            <div class="flex-1">
+                                <div class="font-bold mb-1">禅心冥想</div>
+                                <div class="text-gray-500 text-xs">今天 09:30</div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            今天完成了一次冥想，感觉非常棒！
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

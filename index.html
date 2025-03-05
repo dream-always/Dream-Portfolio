@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alisa - Visual Designer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入Google字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html" class="active">主页</a>
+                <a href="picture.html">美术作品</a>
+                <a href="video.html">影视作品</a>
+                <a href="uiux.html">产品原型 & 交互</a>
+            </div>
+            <div class="social-icons">
+                <a href="javascript:void(0);" class="social-icon" aria-label="Email" onclick="copyText('w13102101571@163.com', '邮箱')"><i class="fas fa-envelope"></i></a>
+                <a href="javascript:void(0);" class="social-icon" aria-label="Phone" onclick="copyText('13102101571', '电话')"><i class="fas fa-phone"></i></a>
+                <a href="https://github.com/dream-always" target="_blank" class="social-icon" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.douyin.com/user/self?from_tab_name=main&showTab=post" target="_blank" class="social-icon" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </nav>
+
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 个人介绍卡片 -->
+            <div class="card intro-card">
+                <div class="card-content">
+                    <h1 class="greeting">你好</h1>
+                    <p class="welcome">欢迎访问我的精选作品集</p>
+                    <p class="bio">本人热爱教育与设计，兼具支教与高校教学经验；精通网站制作、平面设计与视频剪辑工具，也熟练原型设计软件，能从创意到后期全流程掌控。</p>
+                </div>
+                <div class="card-image">
+                    <img src="images/profile.jpg.png" alt="Alisa profile picture" id="profile-img">
+                </div>
+            </div>
+
+            <!-- 作品展示卡片 -->
+            <div class="card works-card">
+                <div class="card-content">
+                    <h2 class="works-title">美术作品</h2>
+                    <div class="series-showcase">
+                        <div class="series-categories">
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-dragon"></i></div>
+                                <span>玄幻武侠</span>
+                            </div>
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-cube"></i></div>
+                                <span>手办模型</span>
+                            </div>
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <span>节日海报</span>
+                            </div>
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-paint-brush"></i></div>
+                                <span>创意卡通</span>
+                            </div>
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-car"></i></div>
+                                <span>汽车展示</span>
+                            </div>
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-camera"></i></div>
+                                <span>摄影精修</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="series-description">涵盖多元创作领域，从玄幻概念艺术到汽车展示设计，展现丰富的视觉创意与专业技能</p>
+                    <a href="picture.html" class="explore-link">探索全部作品 <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="card-icon">
+                    <img src="images/car.png" alt="Car image" class="works-image">
+                </div>
+            </div>
+
+            <!-- 设计技能卡片 -->
+            <div class="card skills-card">
+                <div class="card-content">
+                    <h2 class="works-title">产品原型 & 交互</h2>
+                    <div class="series-showcase">
+                        <div class="series-categories skills-categories">
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-pencil-ruler"></i></div>
+                                <span>线框设计</span>
+                            </div>
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-layer-group"></i></div>
+                                <span>交互原型</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="series-description">展示UI/UX设计全流程，从概念线框图到高保真交互原型，运用Figma、Adobe XD等工具，呈现专业设计思维与用户体验优化方案</p>
+                    <a href="uiux.html" class="explore-link">探索全部作品 <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="card-icon">
+                    <img src="images/UIUX.png" alt="UI/UX design" class="skills-image">
+                </div>
+            </div>
+
+            <!-- 关于我卡片 -->
+            <div class="card about-card">
+                <div class="card-content">
+                    <h2 class="works-title">影视作品</h2>
+                    <div class="series-showcase">
+                        <div class="series-categories video-categories">
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-car-side"></i></div>
+                                <span>汽车广告</span>
+                            </div>
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-cut"></i></div>
+                                <span>影视后期</span>
+                            </div>
+                            <div class="series-category">
+                                <div class="category-icon"><i class="fas fa-mobile-alt"></i></div>
+                                <span>短视频</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="series-description">结合技术与艺术，打造从汽车广告到创意动画的多样化视频内容，注重视觉表现与叙事效果</p>
+                    <a href="video.html" class="explore-link">探索全部作品 <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="card-icon">
+                    <img src="images/ultra.png" alt="Ultra image" class="video-image">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 滚动展示区域 -->
+    <div class="scrolling-section">
+        <!-- 滚动标题 -->
+        <div class="scrolling-title-container">
+            <div class="scrolling-title">
+                <span>Photoshop</span>
+                <span>Premiere Pro</span>
+                <span>Sketch</span>
+                <span>UI</span>
+                <span>UX</span>
+                <span>Photoshop</span>
+                <span>Premiere Pro</span>
+                <span>Sketch</span>
+                <span>UI</span>
+                <span>UX</span>
+            </div>
+        </div>
+        
+        <!-- 图片展示 -->
+        <div class="gallery-container">
+            <div class="gallery-item">
+                <img src="images/1.png" alt="Gallery image 1">
+            </div>
+            <div class="gallery-item">
+                <img src="images/2.png" alt="Gallery image 2">
+            </div>
+            <div class="gallery-item">
+                <img src="images/3.png" alt="Gallery image 3">
+            </div>
+            <div class="gallery-item">
+                <img src="images/4.png" alt="Gallery image 4">
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/script.js"></script>
+
+    <script>
+        // 复制文本到剪贴板的功能
+        function copyText(text, type) {
+            navigator.clipboard.writeText(text).then(function() {
+                // 创建提示元素
+                var tooltip = document.createElement('div');
+                tooltip.className = 'copy-tooltip';
+                tooltip.innerHTML = '已成功复制' + type;
+                
+                // 设置样式
+                tooltip.style.position = 'fixed';
+                tooltip.style.top = '60px';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translateX(-50%)';
+                tooltip.style.backgroundColor = '#6366f1';
+                tooltip.style.color = 'white';
+                tooltip.style.padding = '8px 16px';
+                tooltip.style.borderRadius = '4px';
+                tooltip.style.zIndex = '10000';
+                tooltip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                tooltip.style.opacity = '0';
+                tooltip.style.transition = 'opacity 0.3s ease';
+                
+                // 添加到body
+                document.body.appendChild(tooltip);
+                
+                // 显示提示
+                setTimeout(function() {
+                    tooltip.style.opacity = '1';
+                }, 10);
+                
+                // 2秒后移除提示
+                setTimeout(function() {
+                    tooltip.style.opacity = '0';
+                    setTimeout(function() {
+                        document.body.removeChild(tooltip);
+                    }, 300);
+                }, 2000);
+            }).catch(function(err) {
+                console.error('无法复制文本: ', err);
+                alert('复制失败，请手动复制: ' + text);
+            });
+        }
+    </script>
+
+    <style>
+        /* 优化个人介绍排版样式 */
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .welcome {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #4b5563;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .welcome:after {
+            content: '';
+            position: absolute;
+            width: 40%;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1 0%, transparent 100%);
+            bottom: -5px;
+            left: 0;
+        }
+        
+        .intro-card .bio {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            font-weight: 400;
+            color: #6b7280;
+            text-align: justify;
+            max-width: 95%;
+        }
+
+        /* 美术作品卡片优化样式 */
+        .works-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .series-showcase {
+            margin: 10px 0 15px;
+        }
+
+        .series-categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .series-category {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.12) 100%);
+            border-radius: 12px;
+            padding: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+
+        .series-category:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.2) 100%);
+            box-shadow: 0 4px 15px -3px rgba(99, 102, 241, 0.2);
+        }
+
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 3px 10px -2px rgba(99, 102, 241, 0.25);
+            margin-bottom: 6px;
+        }
+
+        .category-icon i {
+            color: #6366f1;
+            font-size: 16px;
+        }
+
+        .series-category span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .series-description {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #6b7280;
+            margin: 0 0 12px 0;
+            max-width: 95%;
+        }
+
+        .explore-link {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 16px;
+            box-shadow: 0 6px 12px -2px rgba(99, 102, 241, 0.25), 
+                        0 3px 5px -1px rgba(0, 0, 0, 0.1),
+                        0 1px 3px 0 rgba(0, 0, 0, 0.05),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(230, 232, 255, 0.8);
+            position: relative;
+            top: 0;
+            transition: all 0.3s ease;
+        }
+
+        .explore-link i {
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .explore-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4),
+                        0 6px 8px -2px rgba(0, 0, 0, 0.1),
+                        0 2px 4px 0 rgba(0, 0, 0, 0.05),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.9);
+        }
+        
+        .explore-link:hover i {
+            transform: translateX(3px);
+        }
+        
+        .explore-link:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px -2px rgba(99, 102, 241, 0.25),
+                        0 1px 2px -1px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .series-categories {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .category-icon {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .category-icon i {
+                font-size: 14px;
+            }
+            
+            .series-category span {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* 影视作品卡片样式 */
+        .about-card .card-icon {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        
+        .video-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.5s ease;
+            box-shadow: 0 4px 20px -5px rgba(99, 102, 241, 0.25);
+        }
+        
+        .about-card:hover .video-image {
+            transform: scale(1.03);
+        }
+
+        /* 影视作品卡片类别样式优化 */
+        .video-categories {
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 90%;
+        }
+        
+        .video-categories .series-category {
+            padding: 12px 5px;
+        }
+        
+        .video-categories .category-icon {
+            width: 42px;
+            height: 42px;
+            margin-bottom: 8px;
+        }
+        
+        .video-categories .category-icon i {
+            font-size: 18px;
+        }
+        
+        .video-categories .series-category span {
+            font-size: 0.8rem;
+        }
+        
+        /* 视频卡片响应式调整 */
+        @media (max-width: 768px) {
+            .video-categories {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .video-categories .category-icon {
+                width: 34px;
+                height: 34px;
+            }
+        }
+
+        /* 调整卡片图片垂直居中显示 */
+        .card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 确保内容和图片区域间隔合理 */
+        }
+        
+        .card-content {
+            flex: 1; /* 内容区域灵活占用空间 */
+            padding-right: 20px; /* 为图片区域留出空间 */
+        }
+        
+        .card-image, .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 220px; /* 统一图片容器宽度 */
+            height: 220px; /* 统一图片容器高度 */
+            padding: 10px; /* 内边距统一 */
+            overflow: hidden; /* 确保超出部分隐藏 */
+        }
+        
+        #profile-img, .works-image, .video-image, .skills-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            object-fit: cover; /* 统一使用cover模式 */
+            box-shadow: 0 10px 30px -8px rgba(99, 102, 241, 0.25);
+            transition: transform 0.5s ease; /* 统一过渡效果 */
+        }
+        
+        /* 确保猫咪图片大小一致 */
+        .intro-card .card-image {
+            width: 220px;
+            height: 220px;
+            max-width: 220px;
+            max-height: 220px;
+        }
+        
+        #profile-img {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 确保UI/UX图片样式一致 */
+        .skills-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px !important;
+            object-fit: cover !important;
+            box-shadow: 0 10px 30px -8px rgba(99, 102, 241, 0.25) !important;
+        }
+        
+        .card:hover #profile-img, 
+        .card:hover .works-image, 
+        .card:hover .video-image, 
+        .card:hover .skills-image {
+            transform: scale(1.03); /* 统一悬停效果 */
+        }
+        
+        /* 确保影视作品卡片样式不会覆盖统一样式 */
+        .about-card .card-icon {
+            width: 220px;
+            height: 220px;
+        }
+
+        /* Design skills卡片样式 */
+        .skills-categories {
+            grid-template-columns: repeat(2, 1fr);
+            max-width: 90%;
+        }
+        
+        .skills-categories .series-category {
+            padding: 12px 5px;
+        }
+        
+        .skills-categories .category-icon {
+            width: 42px;
+            height: 42px;
+            margin-bottom: 8px;
+        }
+        
+        .skills-categories .category-icon i {
+            font-size: 18px;
+        }
+        
+        .skills-categories .series-category span {
+            font-size: 0.8rem;
+        }
+    </style>
+</body>
+</html> 

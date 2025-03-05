@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影视作品 - Alisa</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/gallery.css">
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入Google字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            overflow: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            margin: auto;
+        }
+        
+        .modal-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-img {
+            transform: scale(1);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+        /* 系列过滤器样式 */
+        .series-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 35px auto;
+            max-width: 900px;
+            padding: 15px;
+            background-color: #f0f0f4;
+            border-radius: 20px;
+            box-shadow: inset 3px 3px 7px rgba(174, 174, 192, 0.2),
+                        inset -3px -3px 7px rgba(255, 255, 255, 0.7);
+        }
+
+        .filter-btn {
+            width: auto;
+            min-width: 45px;
+            height: 45px;
+            padding: 0 20px;
+            background-color: #f0f0f4;
+            border: none;
+            border-radius: 50px;
+            color: #777;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 新拟物化风格 */
+            box-shadow: 5px 5px 10px rgba(174, 174, 192, 0.4),
+                       -5px -5px 10px rgba(255, 255, 255, 0.9);
+        }
+
+        /* 为第一个按钮(全部作品)增加一些特殊样式 */
+        .filter-btn:first-child {
+            min-width: 110px;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 12px rgba(174, 174, 192, 0.4),
+                       -6px -6px 12px rgba(255, 255, 255, 0.9);
+            color: #6366f1;
+        }
+
+        .filter-btn.active {
+            background-color: #ffffff;
+            color: #6366f1;
+            font-weight: 600;
+            /* 按下效果 */
+            box-shadow: inset 4px 4px 6px rgba(174, 174, 192, 0.25),
+                        inset -4px -4px 6px rgba(255, 255, 255, 0.9);
+            transform: translateY(0);
+        }
+
+        /* 为动画添加过渡效果 */
+        .project-card {
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .project-card.hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.85);
+            pointer-events: none;
+        }
+
+        .project-card.hide-left {
+            transform: translateX(-100px) scale(0.85);
+            opacity: 0;
+        }
+
+        .project-card.hide-right {
+            transform: translateX(100px) scale(0.85);
+            opacity: 0;
+        }
+
+        /* 特殊状态的卡片 */
+        .project-card.moving-to-center {
+            position: absolute;
+            z-index: 10;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .series-filter {
+                gap: 8px;
+            }
+            
+            .filter-btn {
+                font-size: 12px;
+                padding: 8px 15px;
+            }
+        }
+
+        /* 视频页面专用样式 - 三卡片并排 */
+        .video-page .gallery-grid {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            gap: 25px;
+            margin: 0 auto;
+            max-width: 1200px;
+            padding: 20px 0 40px;
+            position: relative;
+            min-height: 450px; /* 保持足够的高度防止收缩 */
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 单卡片居中显示样式 */
+        .video-page .gallery-grid.single-card {
+            justify-content: center;
+        }
+
+        /* 动画过渡状态 - 从三卡片过渡到一卡片 */
+        .video-page .gallery-grid.animating {
+            pointer-events: none; /* 动画过程中禁止交互 */
+        }
+
+        .video-page .project-card {
+            flex: 1;
+            max-width: calc(33.33% - 17px);
+            margin-bottom: 0;
+            position: relative;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* 使用弹性曲线 */
+            transform-origin: center;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-page .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-page .gallery-grid.single-card .project-card {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%) scale(1);
+            max-width: 500px;
+            z-index: 10;
+        }
+
+        .video-page .gallery-grid.single-card .project-card:hover {
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        .video-page .gallery-grid.single-card .project-image {
+            height: 320px;
+            transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .video-page .project-image {
+            height: 260px;
+            overflow: hidden;
+            transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .video-page .project-image img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .video-page .project-card:hover .project-image img {
+            transform: scale(1.05);
+        }
+
+        .video-page .project-info {
+            padding: 20px;
+            background: white;
+        }
+
+        .video-page .project-title {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .video-page .project-category {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #6366f1;
+        }
+
+        .video-page .show-more-btn {
+            padding: 8px 20px;
+            background: #6366f1;
+            color: white;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .video-page .show-more-btn:hover {
+            background: #4f46e5;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* 响应式调整 - 视频页面 */
+        @media (max-width: 768px) {
+            .video-page .gallery-grid {
+                flex-direction: column;
+                flex-wrap: wrap;
+            }
+            
+            .video-page .project-card {
+                max-width: 100%;
+                margin-bottom: 30px;
+            }
+            
+            .video-page .project-image img {
+                height: auto;
+            }
+        }
+
+        /* 添加播放图标覆盖层样式 */
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+
+        .play-overlay i {
+            font-size: 70px;
+            color: white;
+            opacity: 0.9;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .project-image:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .project-image:hover .play-overlay i {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .video-page .project-image {
+            height: 260px;
+            overflow: hidden;
+            transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; /* 添加相对定位以便定位播放按钮 */
+        }
+
+        /* 视频控制样式 */
+        .video-controls {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 30px;
+            padding: 10px 20px;
+            z-index: 1100;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+        
+        .modal.active .video-controls {
+            display: flex;
+            opacity: 1;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .video-controls:hover {
+            opacity: 1 !important;
+        }
+        
+        .video-controls .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+        
+        .video-controls .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .progress-container {
+            flex: 1;
+            margin: 0 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .progress-bar {
+            position: relative;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .progress {
+            position: absolute;
+            height: 100%;
+            background: #6366f1;
+            border-radius: 4px;
+            width: 0;
+            pointer-events: none;
+        }
+        
+        .progress-handle {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 5;
+        }
+        
+        .progress-bar:hover .progress-handle {
+            display: block;
+        }
+        
+        .time {
+            display: flex;
+            justify-content: flex-end;
+            color: white;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .right-controls {
+            display: flex;
+            align-items: center;
+        }
+        
+        .volume-slider-container {
+            width: 80px;
+            overflow: hidden;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        
+        .volume-slider {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            position: relative;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        
+        .volume-progress {
+            position: absolute;
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            width: 100%;
+            pointer-events: none;
+        }
+        
+        .volume-handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            transform: translate(50%, -50%);
+            cursor: pointer;
+            display: none;
+            z-index: 5;
+        }
+        
+        .volume-slider:hover .volume-handle {
+            display: block;
+        }
+
+        /* 模态框视频样式 */
+        .modal-video {
+            display: none;
+            max-width: 90%;
+            max-height: 90vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-video {
+            transform: scale(1);
+        }
+
+        /* 滑块预览状态样式 */
+        .progress-handle.preview, .volume-handle.preview {
+            display: block !important;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+            transform: translate(-50%, -50%) scale(1);
+            border: 2px solid #6366f1;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+
+        .progress-handle.active, .volume-handle.active {
+            display: block !important;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 1);
+            transform: translate(-50%, -50%) scale(1.2);
+            border: 2px solid #4f46e5;
+            z-index: 10;
+        }
+
+        .volume-handle.preview, .volume-handle.active {
+            transform: translate(50%, -50%) scale(1);
+        }
+
+        .volume-handle.active {
+            transform: translate(50%, -50%) scale(1.2);
+        }
+
+        .progress-bar:hover .progress, .volume-slider:hover .volume-progress {
+            background-color: #8385f3;
+        }
+
+        /* 确保控制器显示在视频播放器上方 */
+        #videoControls {
+            z-index: 1200;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html">主页</a>
+                <a href="picture.html">美术作品</a>
+                <a href="video.html" class="active">影视作品</a>
+                <a href="uiux.html">产品原型 & 交互</a>
+            </div>
+            <div class="social-icons">
+                <a href="javascript:void(0);" class="social-icon" aria-label="Email" onclick="copyText('w13102101571@163.com', '邮箱')"><i class="fas fa-envelope"></i></a>
+                <a href="javascript:void(0);" class="social-icon" aria-label="Phone" onclick="copyText('13102101571', '电话')"><i class="fas fa-phone"></i></a>
+                <a href="https://github.com/dream-always" target="_blank" class="social-icon" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.douyin.com/user/self?from_tab_name=main&showTab=post" target="_blank" class="social-icon" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </nav>
+
+        <div class="series-filter">
+            <button class="filter-btn active" data-series="all">全部作品</button>
+            <button class="filter-btn" data-series="小米su7 ultra">小米su7 ultra</button>
+            <button class="filter-btn" data-series="绯梦行歌">绯梦行歌</button>
+            <button class="filter-btn" data-series="此生如梦">此生如梦</button>
+        </div>
+
+        <div class="container gallery-page video-page">
+            <!-- 作品展示区域 -->
+            <div class="gallery-grid">
+                <!-- 项目卡片1 - 小米su7 ultra -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/su7 ultra.png" alt="小米su7 ultra">
+                        <div class="play-overlay">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">小米su7 ultra</h2>
+                        <p class="project-category">自制汽车宣传片</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-type="video" data-img="images/su7 ultra.png" data-video="videos/su7.mp4">播放视频</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片2 - 绯梦行歌 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/feimeng.jpg" alt="绯梦行歌">
+                        <div class="play-overlay">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">绯梦行歌</h2>
+                        <p class="project-category">自制港风微短剧</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-type="video" data-img="images/feimeng.jpg" data-video="videos/feimeng.mp4">播放视频</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片3 - 此生如梦 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/cisheng.jpg" alt="此生如梦">
+                        <div class="play-overlay">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">此生如梦</h2>
+                        <p class="project-category">自制旅行片头</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-type="video" data-img="images/cisheng.jpg" data-video="videos/cisheng.mp4">播放视频</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 模态框用于显示全图或播放视频 -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <div class="modal-content">
+            <img class="modal-img" id="fullImage" src="" alt="Full size image">
+            <video class="modal-video" id="videoPlayer">
+                <source src="" type="video/mp4">
+                您的浏览器不支持HTML5视频播放。
+            </video>
+        </div>
+        <div class="video-controls" id="videoControls">
+            <button id="playPauseBtn" class="control-btn">
+                <i class="fas fa-pause"></i>
+            </button>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                    <div class="progress-handle" id="progressHandle"></div>
+                </div>
+                <div class="time">
+                    <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
+                </div>
+            </div>
+            <div class="right-controls">
+                <button id="volumeBtn" class="control-btn">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <div class="volume-slider-container">
+                    <div class="volume-slider" id="volumeSlider">
+                        <div class="volume-progress" id="volumeProgress"></div>
+                        <div class="volume-handle" id="volumeHandle"></div>
+                    </div>
+                </div>
+                <button id="fullscreenBtn" class="control-btn">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript代码 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取模态框元素
+            const modal = document.getElementById('imageModal');
+            const fullImage = document.getElementById('fullImage');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const closeBtn = document.querySelector('.close-btn');
+            const videoControls = document.getElementById('videoControls');
+            
+            // 视频控制元素
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progress = document.getElementById('progress');
+            const progressHandle = document.getElementById('progressHandle');
+            const currentTime = document.getElementById('currentTime');
+            const totalTime = document.getElementById('totalTime');
+            const volumeBtn = document.getElementById('volumeBtn');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumeProgress = document.getElementById('volumeProgress');
+            const volumeHandle = document.getElementById('volumeHandle');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            
+            // 获取所有"播放视频"按钮和图片预览区域
+            const showMoreBtns = document.querySelectorAll('.show-more-btn');
+            const projectImages = document.querySelectorAll('.project-image');
+            
+            // 当前模态框类型
+            let currentModalType = 'image'; // 'image' 或 'video'
+            
+            // 隐藏视频控制条的计时器
+            let controlsTimeout;
+            
+            // 为图片预览区域添加点击事件
+            projectImages.forEach(imageContainer => {
+                imageContainer.addEventListener('click', function() {
+                    // 获取相关的按钮
+                    const button = this.closest('.project-card').querySelector('.show-more-btn');
+                    // 触发按钮点击
+                    button.click();
+                });
+            });
+            
+            // 为每个按钮添加点击事件
+            showMoreBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // 获取媒体类型和路径
+                    const mediaType = this.getAttribute('data-type') || 'image';
+                    const imgSrc = this.getAttribute('data-img');
+                    const videoSrc = this.getAttribute('data-video');
+                    
+                    // 根据类型显示不同内容
+                    if (mediaType === 'video' && videoSrc) {
+                        currentModalType = 'video';
+                        // 设置视频源
+                        videoPlayer.querySelector('source').src = videoSrc;
+                        videoPlayer.load(); // 重新加载视频
+                        
+                        // 显示视频，隐藏图片
+                        fullImage.style.display = 'none';
+                        videoPlayer.style.display = 'block';
+                        videoControls.style.display = 'flex';
+                        videoControls.style.opacity = '1';
+                        
+                        // 播放视频
+                        videoPlayer.play().then(() => {
+                            // 播放成功
+                            updatePlayPauseIcon();
+                            // 确保控制条可见3秒
+                            clearTimeout(controlsTimeout);
+                            controlsTimeout = setTimeout(() => {
+                                if (!videoPlayer.paused) {
+                                    videoControls.style.opacity = '0';
+                                }
+                            }, 3000);
+                        }).catch(error => {
+                            // 自动播放被阻止
+                            console.log('自动播放被阻止:', error);
+                            // 如果自动播放被阻止，仍然保持控制栏可见
+                            videoControls.style.opacity = '1';
+                            // 更新图标为播放状态
+                            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        });
+                    } else {
+                        currentModalType = 'image';
+                        // 设置图片源
+                        fullImage.src = imgSrc;
+                        
+                        // 显示图片，隐藏视频
+                        fullImage.style.display = 'block';
+                        videoPlayer.style.display = 'none';
+                        videoControls.style.display = 'none';
+                        
+                        // 停止视频播放
+                        videoPlayer.pause();
+                    }
+                    
+                    // 显示模态框
+                    modal.style.display = 'block';
+                    // 添加active类以触发动画
+                    setTimeout(() => {
+                        modal.classList.add('active');
+                    }, 10);
+                });
+            });
+            
+            // 视频暂停时保持控制条可见
+            videoPlayer.addEventListener('pause', function() {
+                videoControls.style.opacity = '1';
+                clearTimeout(controlsTimeout);
+            });
+            
+            // 视频播放时设置控制条自动隐藏
+            videoPlayer.addEventListener('play', function() {
+                // 先显示控制条
+                videoControls.style.opacity = '1';
+                // 3秒后隐藏控制条
+                clearTimeout(controlsTimeout);
+                controlsTimeout = setTimeout(() => {
+                    if (!videoPlayer.paused) {
+                        videoControls.style.opacity = '0';
+                    }
+                }, 3000);
+            });
+            
+            // 视频事件处理
+            // 播放/暂停按钮
+            playPauseBtn.addEventListener('click', function() {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                } else {
+                    videoPlayer.pause();
+                }
+                updatePlayPauseIcon();
+            });
+            
+            // 视频时间更新
+            videoPlayer.addEventListener('timeupdate', function() {
+                // 更新进度条
+                const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                progress.style.width = percent + '%';
+                progressHandle.style.left = percent + '%';
+                
+                // 更新当前时间
+                currentTime.textContent = formatTime(videoPlayer.currentTime);
+            });
+            
+            // 视频加载完成后更新总时长
+            videoPlayer.addEventListener('loadedmetadata', function() {
+                totalTime.textContent = formatTime(videoPlayer.duration);
+            });
+            
+            // 进度条交互 - 增强版
+            let isDraggingProgress = false;
+            
+            // 鼠标移动到进度条上，滑块跟随鼠标移动
+            progressBar.addEventListener('mousemove', function(e) {
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                const previewPercent = Math.max(0, Math.min(1, pos)) * 100;
+                
+                // 如果不是拖动状态，只是显示预览效果
+                if (!isDraggingProgress) {
+                    // 显示进度手柄
+                    progressHandle.style.display = 'block';
+                    progressHandle.style.left = previewPercent + '%';
+                    
+                    // 添加预览指示器样式
+                    progressHandle.classList.add('preview');
+                    
+                    // 可选：显示预览时间
+                    const previewTime = videoPlayer.duration * (previewPercent / 100);
+                    currentTime.innerHTML = '<span style="color:#8385f3">' + formatTime(previewTime) + '</span>';
+                }
+            });
+            
+            // 鼠标离开进度条，如果不是在拖动中，则隐藏预览
+            progressBar.addEventListener('mouseleave', function() {
+                if (!isDraggingProgress) {
+                    progressHandle.style.display = 'none';
+                    progressHandle.classList.remove('preview');
+                    // 恢复实际时间显示
+                    currentTime.textContent = formatTime(videoPlayer.currentTime);
+                }
+            });
+            
+            // 进度条点击
+            progressBar.addEventListener('mousedown', function(e) {
+                isDraggingProgress = true;
+                document.body.style.cursor = 'grabbing';
+                progressHandle.classList.remove('preview');
+                progressHandle.classList.add('active');
+                
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                const clickPercent = Math.max(0, Math.min(1, pos));
+                
+                // 更新视频时间
+                videoPlayer.currentTime = clickPercent * videoPlayer.duration;
+                
+                // 更新进度条显示
+                progress.style.width = (clickPercent * 100) + '%';
+                progressHandle.style.left = (clickPercent * 100) + '%';
+                
+                // 监听全局鼠标移动和松开事件
+                document.addEventListener('mousemove', progressDragMove);
+                document.addEventListener('mouseup', progressDragEnd);
+                
+                // 阻止默认行为
+                e.preventDefault();
+            });
+            
+            // 拖动进度条
+            function progressDragMove(e) {
+                if (!isDraggingProgress) return;
+                
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                const dragPercent = Math.max(0, Math.min(1, pos));
+                
+                // 只更新视觉效果，不更新视频时间
+                progress.style.width = (dragPercent * 100) + '%';
+                progressHandle.style.left = (dragPercent * 100) + '%';
+                
+                // 更新预览时间
+                const previewTime = videoPlayer.duration * dragPercent;
+                currentTime.innerHTML = '<span style="color:#8385f3">' + formatTime(previewTime) + '</span>';
+            }
+            
+            // 结束拖动进度条
+            function progressDragEnd(e) {
+                if (!isDraggingProgress) return;
+                
+                document.body.style.cursor = '';
+                progressHandle.classList.remove('active');
+                
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                const finalPercent = Math.max(0, Math.min(1, pos));
+                
+                // 更新视频时间
+                videoPlayer.currentTime = finalPercent * videoPlayer.duration;
+                
+                // 清理拖动状态
+                isDraggingProgress = false;
+                document.removeEventListener('mousemove', progressDragMove);
+                document.removeEventListener('mouseup', progressDragEnd);
+                
+                // 如果鼠标不在进度条上，隐藏手柄
+                if (!isMouseOverElement(progressBar, e)) {
+                    progressHandle.style.display = 'none';
+                }
+            }
+            
+            // 音量滑块交互 - 增强版
+            let isDraggingVolume = false;
+            
+            // 鼠标移动到音量滑块上，手柄跟随鼠标移动
+            volumeSlider.addEventListener('mousemove', function(e) {
+                const rect = volumeSlider.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                const previewPercent = Math.max(0, Math.min(1, pos)) * 100;
+                
+                // 如果不是拖动状态，只是显示预览效果
+                if (!isDraggingVolume) {
+                    // 显示音量手柄
+                    volumeHandle.style.display = 'block';
+                    volumeHandle.style.left = previewPercent + '%';
+                    
+                    // 添加预览指示器样式
+                    volumeHandle.classList.add('preview');
+                }
+            });
+            
+            // 鼠标离开音量滑块，如果不是在拖动中，则隐藏预览
+            volumeSlider.addEventListener('mouseleave', function() {
+                if (!isDraggingVolume) {
+                    volumeHandle.style.display = 'none';
+                    volumeHandle.classList.remove('preview');
+                }
+            });
+            
+            // 音量滑块点击和拖动
+            volumeSlider.addEventListener('mousedown', function(e) {
+                isDraggingVolume = true;
+                document.body.style.cursor = 'grabbing';
+                volumeHandle.classList.remove('preview');
+                volumeHandle.classList.add('active');
+                
+                const rect = volumeSlider.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                const clickPercent = Math.max(0, Math.min(1, pos));
+                
+                // 更新视频音量
+                updateVolume(clickPercent);
+                
+                // 监听全局鼠标移动和松开事件
+                document.addEventListener('mousemove', volumeDragMove);
+                document.addEventListener('mouseup', volumeDragEnd);
+                
+                // 阻止默认行为
+                e.preventDefault();
+            });
+            
+            // 拖动音量滑块
+            function volumeDragMove(e) {
+                if (!isDraggingVolume) return;
+                
+                const rect = volumeSlider.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                const dragPercent = Math.max(0, Math.min(1, pos));
+                
+                // 更新音量
+                updateVolume(dragPercent);
+            }
+            
+            // 结束拖动音量滑块
+            function volumeDragEnd(e) {
+                if (!isDraggingVolume) return;
+                
+                document.body.style.cursor = '';
+                volumeHandle.classList.remove('active');
+                
+                // 清理拖动状态
+                isDraggingVolume = false;
+                document.removeEventListener('mousemove', volumeDragMove);
+                document.removeEventListener('mouseup', volumeDragEnd);
+                
+                // 如果鼠标不在音量滑块上，隐藏手柄
+                if (!isMouseOverElement(volumeSlider, e)) {
+                    volumeHandle.style.display = 'none';
+                }
+            }
+            
+            // 更新音量的通用函数
+            function updateVolume(volumeValue) {
+                videoPlayer.volume = volumeValue;
+                volumeProgress.style.width = (volumeValue * 100) + '%';
+                volumeHandle.style.left = (volumeValue * 100) + '%';
+                
+                // 更新音量图标
+                if (volumeValue === 0) {
+                    videoPlayer.muted = true;
+                    volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                } else {
+                    videoPlayer.muted = false;
+                    if (volumeValue < 0.5) {
+                        volumeBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
+                    } else {
+                        volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    }
+                }
+            }
+            
+            // 判断鼠标是否在指定元素上
+            function isMouseOverElement(element, mouseEvent) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    mouseEvent.clientX >= rect.left &&
+                    mouseEvent.clientX <= rect.right &&
+                    mouseEvent.clientY >= rect.top &&
+                    mouseEvent.clientY <= rect.bottom
+                );
+            }
+            
+            // 音量按钮
+            volumeBtn.addEventListener('click', function() {
+                if (videoPlayer.muted) {
+                    videoPlayer.muted = false;
+                    volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    volumeProgress.style.width = (videoPlayer.volume * 100) + '%';
+                    volumeHandle.style.left = (videoPlayer.volume * 100) + '%';
+                } else {
+                    videoPlayer.muted = true;
+                    volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    volumeProgress.style.width = '0%';
+                    volumeHandle.style.left = '0%';
+                }
+            });
+            
+            // 全屏按钮
+            fullscreenBtn.addEventListener('click', function() {
+                if (!document.fullscreenElement) {
+                    if (videoPlayer.requestFullscreen) {
+                        videoPlayer.requestFullscreen();
+                    } else if (videoPlayer.webkitRequestFullscreen) {
+                        videoPlayer.webkitRequestFullscreen();
+                    } else if (videoPlayer.msRequestFullscreen) {
+                        videoPlayer.msRequestFullscreen();
+                    }
+                    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                }
+            });
+            
+            // 全屏状态改变
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+            document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
+            document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
+            
+            // 鼠标移动时显示控制条
+            modal.addEventListener('mousemove', function() {
+                if (currentModalType === 'video') {
+                    videoControls.style.opacity = '1';
+                    
+                    // 清除之前的定时器
+                    clearTimeout(controlsTimeout);
+                    
+                    // 设置新的定时器，3秒后隐藏控制条
+                    controlsTimeout = setTimeout(() => {
+                        if (!videoPlayer.paused) {
+                            videoControls.style.opacity = '0';
+                        }
+                    }, 3000);
+                }
+            });
+            
+            // 点击关闭按钮关闭模态框
+            closeBtn.addEventListener('click', closeModal);
+            
+            // 点击模态框背景也可以关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // 关闭模态框的函数
+            function closeModal() {
+                modal.classList.remove('active');
+                
+                // 如果是视频，停止播放
+                if (currentModalType === 'video') {
+                    videoPlayer.pause();
+                }
+                
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+            
+            // 更新播放/暂停图标
+            function updatePlayPauseIcon() {
+                if (videoPlayer.paused) {
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                } else {
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                }
+            }
+            
+            // 更新全屏图标
+            function updateFullscreenIcon() {
+                if (document.fullscreenElement) {
+                    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                } else {
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                }
+            }
+            
+            // 格式化时间 (秒 -> mm:ss)
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                seconds = Math.floor(seconds % 60);
+                return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            }
+            
+            // 添加ESC键关闭模态框功能
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'block') {
+                    closeModal();
+                } else if (e.key === ' ' && currentModalType === 'video') {
+                    // 空格键播放/暂停
+                    e.preventDefault();
+                    if (videoPlayer.paused) {
+                        videoPlayer.play();
+                    } else {
+                        videoPlayer.pause();
+                    }
+                    updatePlayPauseIcon();
+                }
+            });
+        });
+
+        /* 系列过滤功能 - 改进的版本 */
+        document.addEventListener('DOMContentLoaded', function() {
+            // 系列过滤功能
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            const galleryGrid = document.querySelector('.gallery-grid');
+            
+            // 存储当前选中的过滤条件
+            let currentFilter = 'all';
+            let isAnimating = false;
+            
+            // 获取卡片位置
+            function getCardPositions() {
+                const positions = [];
+                projectCards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    positions.push({
+                        left: rect.left,
+                        top: rect.top,
+                        width: rect.width,
+                        height: rect.height
+                    });
+                });
+                return positions;
+            }
+            
+            // 为每个过滤按钮添加点击事件
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 如果正在动画中或点击已激活的按钮，则不执行操作
+                    if (isAnimating || this.classList.contains('active')) {
+                        return;
+                    }
+                    
+                    // 移除所有按钮的活动状态
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // 为当前点击的按钮添加活动状态
+                    this.classList.add('active');
+                    
+                    // 获取要过滤的系列名称
+                    const seriesFilter = this.getAttribute('data-series');
+                    
+                    // 标记正在动画中
+                    isAnimating = true;
+                    
+                    // 记录初始位置
+                    const initialPositions = getCardPositions();
+                    
+                    // 标记应该显示的卡片数量和索引
+                    let visibleCardsCount = 0;
+                    let visibleCardIndex = -1;
+                    
+                    // 为动画添加类
+                    galleryGrid.classList.add('animating');
+                    
+                    // 从all到特定卡片
+                    if (currentFilter === 'all' && seriesFilter !== 'all') {
+                        // 首先计算哪些卡片将保持可见
+                        projectCards.forEach((card, index) => {
+                            const title = card.querySelector('.project-title').textContent;
+                            if (title === seriesFilter) {
+                                visibleCardIndex = index;
+                                visibleCardsCount++;
+                            }
+                        });
+                        
+                        // 先给gallery添加single-card类，为过渡做准备
+                        setTimeout(() => {
+                            galleryGrid.classList.add('single-card');
+                            
+                            // 然后处理每个卡片
+                            projectCards.forEach((card, index) => {
+                                const title = card.querySelector('.project-title').textContent;
+                                
+                                if (title === seriesFilter) {
+                                    // 这是要显示的卡片
+                                    card.style.display = 'block';
+                                    card.classList.remove('hidden');
+                                    card.classList.add('moving-to-center');
+                                } else {
+                                    // 根据位置决定向左还是向右隐藏
+                                    if (index < visibleCardIndex) {
+                                        card.classList.add('hide-left');
+                                    } else {
+                                        card.classList.add('hide-right');
+                                    }
+                                    
+                                    // 延迟隐藏，让动画有时间执行
+                                    setTimeout(() => {
+                                        card.style.display = 'none';
+                                        card.classList.remove('hide-left', 'hide-right');
+                                    }, 800);
+                                }
+                            });
+                            
+                            // 动画结束后清理类并更新当前过滤器
+                            setTimeout(() => {
+                                projectCards.forEach(card => {
+                                    card.classList.remove('moving-to-center');
+                                });
+                                isAnimating = false;
+                                galleryGrid.classList.remove('animating');
+                                currentFilter = seriesFilter;
+                            }, 50);
+                        }, 50);
+                    }
+                    // 从特定卡片到all
+                    else if (currentFilter !== 'all' && seriesFilter === 'all') {
+                        // 先移除single-card类
+                        setTimeout(() => {
+                            // 先显示所有卡片但保持透明
+                            projectCards.forEach(card => {
+                                card.style.display = 'block';
+                                card.classList.add('hidden');
+                            });
+                            
+                            // 短暂延迟后移除single-card类
+                            setTimeout(() => {
+                                galleryGrid.classList.remove('single-card');
+                                
+                                // 再短暂延迟后显示所有卡片
+                                setTimeout(() => {
+                                    projectCards.forEach(card => {
+                                        card.classList.remove('hidden', 'hide-left', 'hide-right');
+                                    });
+                                    
+                                    // 动画结束后更新状态
+                                    setTimeout(() => {
+                                        isAnimating = false;
+                                        galleryGrid.classList.remove('animating');
+                                        currentFilter = seriesFilter;
+                                    }, 800);
+                                }, 50);
+                            }, 50);
+                        }, 50);
+                    }
+                    // 从一个特定卡片到另一个特定卡片
+                    else if (currentFilter !== 'all' && seriesFilter !== 'all' && currentFilter !== seriesFilter) {
+                        // 找到当前显示的卡片和将要显示的卡片
+                        let currentCard = null;
+                        let targetCard = null;
+                        
+                        projectCards.forEach(card => {
+                            const title = card.querySelector('.project-title').textContent;
+                            if (title === currentFilter) {
+                                currentCard = card;
+                            } else if (title === seriesFilter) {
+                                targetCard = card;
+                            }
+                        });
+                        
+                        if (currentCard && targetCard) {
+                            // 首先隐藏当前卡片
+                            currentCard.classList.add('hidden');
+                            
+                            // 延迟后隐藏当前卡片并显示目标卡片
+                            setTimeout(() => {
+                                currentCard.style.display = 'none';
+                                targetCard.style.display = 'block';
+                                
+                                // 短暂延迟后显示目标卡片
+                                setTimeout(() => {
+                                    targetCard.classList.remove('hidden');
+                                    
+                                    // 动画结束后更新状态
+                                    setTimeout(() => {
+                                        isAnimating = false;
+                                        galleryGrid.classList.remove('animating');
+                                        currentFilter = seriesFilter;
+                                    }, 800);
+                                }, 50);
+                            }, 800);
+                        }
+                    }
+                });
+            });
+        });
+
+        // 复制文本到剪贴板的功能
+        function copyText(text, type) {
+            navigator.clipboard.writeText(text).then(function() {
+                // 创建提示元素
+                var tooltip = document.createElement('div');
+                tooltip.className = 'copy-tooltip';
+                tooltip.innerHTML = '已成功复制' + type;
+                
+                // 设置样式
+                tooltip.style.position = 'fixed';
+                tooltip.style.top = '60px';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translateX(-50%)';
+                tooltip.style.backgroundColor = '#6366f1';
+                tooltip.style.color = 'white';
+                tooltip.style.padding = '8px 16px';
+                tooltip.style.borderRadius = '4px';
+                tooltip.style.zIndex = '10000';
+                tooltip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                tooltip.style.opacity = '0';
+                tooltip.style.transition = 'opacity 0.3s ease';
+                
+                // 添加到body
+                document.body.appendChild(tooltip);
+                
+                // 显示提示
+                setTimeout(function() {
+                    tooltip.style.opacity = '1';
+                }, 10);
+                
+                // 2秒后移除提示
+                setTimeout(function() {
+                    tooltip.style.opacity = '0';
+                    setTimeout(function() {
+                        document.body.removeChild(tooltip);
+                    }, 300);
+                }, 2000);
+            }).catch(function(err) {
+                console.error('无法复制文本: ', err);
+                alert('复制失败，请手动复制: ' + text);
+            });
+        }
+    </script>
+</body>
+</html> 

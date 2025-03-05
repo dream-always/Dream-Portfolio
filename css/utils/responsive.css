@@ -1,0 +1,130 @@
+/* 响应式设计 */
+@media (max-width: 992px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+    
+    .card {
+        padding: var(--space-lg);
+    }
+    
+    .card-content {
+        max-width: 100%;
+    }
+    
+    .intro-card .card-image,
+    .card-icon {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .nav-links a {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .navbar {
+        padding: 10px;
+    }
+    
+    .social-icons {
+        gap: 10px;
+    }
+    
+    .social-icon {
+        width: 35px;
+        height: 35px;
+    }
+    
+    h1 {
+        font-size: 28px;
+    }
+    
+    h2 {
+        font-size: 20px;
+    }
+    
+    .card {
+        padding: var(--space-md);
+    }
+}
+
+/* 响应式样式 */
+@media (max-width: 1024px) {
+    .scrolling-title {
+        font-size: 75px;
+    }
+    
+    .scrolling-title span {
+        margin-right: 80px;
+    }
+    
+    .gallery-item {
+        width: calc(50% - 15px);
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+    
+    .scrolling-title {
+        font-size: 55px;
+    }
+    
+    .scrolling-title span {
+        margin-right: 60px;
+    }
+    
+    .gallery-container {
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .scrolling-title {
+        font-size: 36px;
+    }
+    
+    .scrolling-title span {
+        margin-right: 40px;
+    }
+    
+    .gallery-item {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .card-content {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .intro-card .card-image {
+        margin: 0 auto;
+    }
+} 

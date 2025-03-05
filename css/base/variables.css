@@ -1,0 +1,30 @@
+/* CSS变量 */
+:root {
+    /* 颜色 */
+    --primary-color: #6c5ce7;
+    --primary-light-color: #a29bfe;
+    --secondary-color: #d1c7ff;
+    --background-color: #f0f0f5;
+    --card-background: #ffffff;
+    --text-dark: #4a4a4a;
+    --text-medium: #555555;
+    --text-light: #8a8a8a;
+    
+    /* 阴影 */
+    --card-shadow: 8px 15px 30px rgba(108, 99, 255, 0.08), 0 5px 20px rgba(0, 0, 0, 0.03);
+    --hover-shadow: 10px 20px 40px rgba(108, 99, 255, 0.12), 0 8px 25px rgba(0, 0, 0, 0.06);
+    
+    /* 边框半径 */
+    --border-radius-small: 10px;
+    --border-radius-medium: 20px;
+    --border-radius-large: 25px;
+    --border-radius-round: 30px;
+    --border-radius-circle: 50%;
+    
+    /* 间距 */
+    --space-xs: 5px;
+    --space-sm: 10px;
+    --space-md: 15px;
+    --space-lg: 20px;
+    --space-xl: 30px;
+} 

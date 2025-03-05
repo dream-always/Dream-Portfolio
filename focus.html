@@ -1,0 +1,2382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专注时钟 - iOS APP 原型</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style id="core-styles">
+        /* ===== 返回按钮样式 ===== */
+        .back-button {
+            position: fixed;
+            top: 80px;  /* 原来是30px，向下移动 */
+            left: 30px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(255, 107, 107, 0.9); /* 使用主色调 */
+            color: white;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 107, 107, 0.5);
+            background: rgba(255, 83, 83, 0.95);
+        }
+        
+        .back-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .back-button {
+                top: 20px;
+                left: 20px;
+                padding: 10px 20px;
+            }
+        }
+        
+        /* ===== 基础变量设置 ===== */
+        :root {
+            /* 主题颜色 - 明亮模式 */
+            --primary-color: #FF6B6B; /* 主色调 - 柔和的红色用于计时器 */
+            --secondary-color: #4ECDC4; /* 次要色调 - 柔和的青色用于休息时间 */
+            --accent-color: #FFE66D; /* 强调色 - 用于高亮和按钮 */
+            
+            /* 文本颜色 */
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            
+            /* 背景颜色 */
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F7F7F7;
+            --bg-tertiary: #EFEFEF;
+            
+            /* 界面颜色 */
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            
+            /* 状态颜色 */
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --error-color: #F44336;
+            
+            /* 交互状态 */
+            --hover-opacity: 0.8;
+            --active-opacity: 0.7;
+            
+            /* 尺寸变量 */
+            --container-width: 1200px;
+            --header-height: 70px;
+            --footer-height: 60px;
+            --screen-width: 375px;
+            --screen-height: 667px;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 24px;
+            
+            /* 阴影 */
+            --shadow-sm: 0 2px 8px var(--shadow-color);
+            --shadow-md: 0 4px 16px var(--shadow-color);
+            --shadow-lg: 0 8px 24px var(--shadow-color);
+            
+            /* 字体 */
+            --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            
+            /* 动画 */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+        
+        /* 暗黑模式变量 */
+        body.dark-theme {
+            /* 主题颜色 - 暗黑模式 */
+            --primary-color: #FF6B6B; /* 保持相同的主色调 */
+            --secondary-color: #4ECDC4; /* 保持相同的次要色调 */
+            --accent-color: #FFE66D; /* 保持相同的强调色 */
+            
+            /* 文本颜色 */
+            --text-primary: #F7F7F7;
+            --text-secondary: #BBBBBB;
+            --text-tertiary: #888888;
+            
+            /* 背景颜色 */
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --bg-tertiary: #2C2C2C;
+            
+            /* 界面颜色 */
+            --card-bg: #1E1E1E;
+            --border-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        /* ===== 重置样式 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            transition: background-color var(--transition-normal);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-bottom: 0.5em;
+            font-weight: 600;
+        }
+        
+        p {
+            margin-bottom: 1em;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: opacity var(--transition-fast);
+        }
+        
+        a:hover {
+            opacity: var(--hover-opacity);
+        }
+        
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            background: none;
+            outline: none;
+        }
+        
+        ul, ol {
+            list-style-position: inside;
+        }
+        
+        /* ===== 布局样式 ===== */
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .header {
+            height: var(--header-height);
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .header .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+        
+        .main-title {
+            font-size: 1.5rem;
+            margin-bottom: 0;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        .main-nav a {
+            color: var(--text-primary);
+            font-weight: 500;
+            padding: 8px 0;
+            position: relative;
+        }
+        
+        .main-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width var(--transition-normal);
+        }
+        
+        .main-nav a:hover::after {
+            width: 100%;
+        }
+        
+        .theme-toggle button {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            transition: opacity var(--transition-fast);
+        }
+        
+        .theme-toggle button:hover {
+            opacity: var(--hover-opacity);
+        }
+        
+        .main-content {
+            padding: 40px 0;
+            min-height: calc(100vh - var(--header-height) - var(--footer-height));
+        }
+        
+        .footer {
+            height: var(--footer-height);
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+        
+        /* ===== 屏幕部分样式 ===== */
+        .screens-section {
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            text-align: center; /* 添加居中对齐 */
+        }
+        
+        /* 设备模拟样式 */
+        .screen-container {
+            width: var(--screen-width);
+            height: var(--screen-height);
+            background-color: var(--card-bg);
+            border-radius: 40px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+            border: 10px solid #1A365D;
+            margin: 0 auto;
+            transition: all var(--transition-normal);
+        }
+        
+        /* 其他界面的包装容器 */
+        #other-screens {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .screen-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .screen-label {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        
+        /* 状态栏样式 */
+        .screen-header {
+            height: 40px;
+            padding: 0 15px;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* 信号图标 */
+        .signal-icon {
+            width: 16px;
+            height: 12px;
+            position: relative;
+        }
+        
+        .signal-icon::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 3px;
+            height: 4px;
+            bottom: 0;
+            background-color: var(--text-primary);
+            border-radius: 1px;
+        }
+        
+        .signal-icon::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            width: 3px;
+            height: 7px;
+            bottom: 0;
+            background-color: var(--text-primary);
+            border-radius: 1px;
+        }
+        
+        /* WiFi图标 */
+        .wifi-icon {
+            width: 16px;
+            height: 12px;
+            position: relative;
+            margin-left: 4px;
+        }
+        
+        /* 电池图标 */
+        .battery-icon {
+            width: 24px;
+            height: 12px;
+            border: 1px solid var(--text-primary);
+            border-radius: 2px;
+            position: relative;
+            margin-left: 4px;
+        }
+        
+        .battery-icon::before {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 6px;
+            left: 2px;
+            top: 2px;
+            background-color: var(--text-primary);
+            border-radius: 1px;
+        }
+        
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 4px;
+            right: -4px;
+            top: 3px;
+            background-color: var(--text-primary);
+            border-radius: 0 2px 2px 0;
+        }
+        
+        /* 屏幕内容区域 */
+        .screen-content {
+            height: calc(var(--screen-height) - 140px);
+            overflow-y: auto;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+        }
+        
+        /* 底部标签栏 */
+        .screen-footer {
+            height: 60px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .tab-bar {
+            display: flex;
+            height: 100%;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 25%;
+            padding: 8px 0;
+            color: var(--text-tertiary);
+            transition: color var(--transition-fast);
+        }
+        
+        .tab-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .tab-item span {
+            font-size: 10px;
+        }
+        
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+        
+        /* 响应式布局 */
+        @media (max-width: 1200px) {
+            :root {
+                --container-width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-nav {
+                display: none;
+            }
+            
+            #other-screens {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        /* ===== 计时器界面样式 ===== */
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            position: relative;
+        }
+        
+        .timer-header {
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+        }
+        
+        .timer-header .mode-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .mode-selector .mode-option {
+            padding: 4px 12px;
+            font-size: 12px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 15px;
+            margin: 0 4px;
+            transition: all var(--transition-fast);
+        }
+        
+        .mode-selector .mode-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .timer-header .current-task {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-top: 5px;
+        }
+        
+        .timer-circle-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+        }
+        
+        .timer-circle {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: var(--bg-tertiary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .timer-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) 0%, transparent 0%);
+            transition: background 0.5s linear;
+        }
+        
+        .timer-progress.rest {
+            background: conic-gradient(var(--secondary-color) 0%, transparent 0%);
+        }
+        
+        .timer-content-inner {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .timer-time {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        
+        .timer-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .timer-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .timer-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .timer-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .timer-btn.start {
+            background-color: var(--primary-color);
+        }
+        
+        .timer-btn.pause {
+            background-color: var(--warning-color);
+        }
+        
+        .timer-btn.stop {
+            background-color: var(--text-tertiary);
+        }
+        
+        .timer-info {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 10px;
+        }
+        
+        .timer-session-count {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 5px;
+        }
+        
+        .session-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+        }
+        
+        .session-dot.completed {
+            background-color: var(--primary-color);
+        }
+        
+        /* ===== 任务列表界面样式 ===== */
+        .tasks-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tasks-header {
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tasks-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .tasks-filter {
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+        
+        .tasks-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        
+        .task-item {
+            padding: 15px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            transition: transform var(--transition-fast);
+        }
+        
+        .task-item:active {
+            transform: scale(0.98);
+        }
+        
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            margin-right: 15px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .task-checkbox.checked {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .task-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            left: 6px;
+            top: 1px;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+        
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: var(--text-tertiary);
+        }
+        
+        .task-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .task-pomodoros {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .task-pomodoros i {
+            margin-right: 4px;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+        
+        .add-task-btn {
+            position: absolute;
+            right: 20px;
+            bottom: 80px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .add-task-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .add-task-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .empty-state {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            color: var(--text-tertiary);
+            margin-bottom: 15px;
+        }
+        
+        .empty-state-text {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        
+        .empty-state-btn {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            transition: opacity var(--transition-fast);
+        }
+        
+        /* ===== 统计界面样式 ===== */
+        .stats-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stats-header {
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .stats-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .stats-period-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .period-btn {
+            flex: 1;
+            text-align: center;
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+        
+        .period-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .stats-summary {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .summary-item {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .chart-container {
+            flex: 1;
+            padding: 15px 0;
+            position: relative;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .chart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+        
+        .chart::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+        
+        .chart-bar {
+            flex: 1;
+            margin: 0 3px;
+            background-color: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height var(--transition-normal);
+        }
+        
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .chart-label {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .achievements-section {
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .achievements-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .achievement-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-fast);
+        }
+        
+        .achievement-item:active {
+            transform: scale(0.98);
+        }
+        
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .achievement-icon.locked {
+            background-color: var(--bg-tertiary);
+            color: var(--text-tertiary);
+        }
+        
+        .achievement-title {
+            font-size: 10px;
+            text-align: center;
+            color: var(--text-secondary);
+            word-break: break-word;
+        }
+        
+        /* ===== 设置界面样式 ===== */
+        .settings-container {
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .settings-section {
+            margin-bottom: 20px;
+        }
+        
+        .settings-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            padding: 10px 0 5px;
+        }
+        
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-item-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .settings-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: var(--bg-tertiary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            font-size: 16px;
+            color: var(--primary-color);
+        }
+        
+        .settings-icon.time {
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+        
+        .settings-icon.sound {
+            background-color: rgba(78, 205, 196, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .settings-icon.theme {
+            background-color: rgba(255, 230, 109, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .settings-icon.notification {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+        
+        .settings-label {
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+        
+        .settings-value {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+        
+        .settings-toggle {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            border-radius: 14px;
+            background-color: var(--bg-tertiary);
+            transition: background-color var(--transition-fast);
+        }
+        
+        .settings-toggle.active {
+            background-color: var(--primary-color);
+        }
+        
+        .settings-toggle::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: white;
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-fast);
+        }
+        
+        .settings-toggle.active::before {
+            transform: translateX(22px);
+        }
+        
+        .settings-slider-container {
+            width: 100%;
+            padding: 0 0 15px;
+        }
+        
+        .settings-slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .slider-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .slider-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .settings-slider {
+            width: 100%;
+            height: 4px;
+            background-color: var(--bg-tertiary);
+            border-radius: 2px;
+            position: relative;
+        }
+        
+        .settings-slider-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            width: 70%;
+        }
+        
+        .settings-slider-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            position: absolute;
+            top: 50%;
+            left: 70%;
+            transform: translate(-50%, -50%);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .theme-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .theme-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .theme-option.selected {
+            border-color: var(--primary-color);
+        }
+        
+        .theme-option::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: white;
+        }
+        
+        .theme-red {
+            background-color: #FF6B6B;
+        }
+        
+        .theme-green {
+            background-color: #4ECDC4;
+        }
+        
+        .theme-blue {
+            background-color: #4A89DC;
+        }
+        
+        .theme-purple {
+            background-color: #AC92EC;
+        }
+        
+        .theme-orange {
+            background-color: #FFCE54;
+        }
+        
+        .settings-btn {
+            width: 100%;
+            padding: 12px 0;
+            text-align: center;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: var(--border-radius-md);
+            margin-top: 10px;
+        }
+        
+        .settings-btn.danger {
+            color: var(--error-color);
+        }
+
+        /* ===== 任务详情/编辑界面样式 ===== */
+        .task-detail-content {
+            padding: 0;
+        }
+
+        .task-detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-back-btn {
+            color: var(--primary-color);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-back-btn i {
+            margin-right: 4px;
+        }
+
+        .detail-save-btn {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .task-detail-form {
+            padding: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .pomodoro-counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .counter-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .counter-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .task-detail-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .detail-action-btn {
+            width: 100%;
+            padding: 15px 0;
+            border-radius: var(--border-radius-md);
+            text-align: center;
+            font-weight: 600;
+            transition: opacity var(--transition-fast);
+        }
+
+        .detail-action-btn:hover {
+            opacity: var(--hover-opacity);
+        }
+
+        .detail-action-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .detail-action-btn.secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .detail-action-btn.danger {
+            color: var(--error-color);
+            background-color: transparent;
+            border: 1px solid var(--error-color);
+        }
+
+        /* ===== 欢迎/引导页面样式 ===== */
+        .welcome-content {
+            padding: 0;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-slide {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            position: absolute;
+            width: 100%;
+            transition: transform var(--transition-slow);
+        }
+
+        .welcome-slide.active {
+            transform: translateX(0);
+        }
+
+        .welcome-slide:not(.active) {
+            transform: translateX(100%);
+        }
+
+        .welcome-illustration {
+            width: 200px;
+            height: 200px;
+            background-color: var(--primary-color);
+            opacity: 0.1;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .welcome-illustration i {
+            font-size: 80px;
+            color: var(--primary-color);
+            opacity: 1;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .welcome-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .welcome-indicators {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+        }
+
+        .welcome-indicator.active {
+            background-color: var(--primary-color);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .welcome-buttons {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .welcome-btn {
+            flex: 1;
+            padding: 15px 0;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            text-align: center;
+            transition: opacity var(--transition-fast);
+        }
+
+        .welcome-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .welcome-btn.secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .welcome-btn:hover {
+            opacity: var(--hover-opacity);
+        }
+
+        /* ===== 动画效果 ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <a href="uiux.html" class="back-button">
+        <i class="fas fa-arrow-left"></i> 返回作品集
+    </a>
+    
+    <header class="header">
+        <div class="container">
+            <h1 class="main-title">专注时钟 - iOS APP 原型</h1>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#timer-screen">计时器界面</a></li>
+                    <li><a href="#tasks-screen">任务列表界面</a></li>
+                    <li><a href="#stats-screen">统计界面</a></li>
+                    <li><a href="#settings-screen">设置界面</a></li>
+                    <li><a href="#other-screens">其他界面</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle">
+                <button id="theme-switch">切换主题</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 添加音频元素 -->
+    <audio id="timer-complete-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="button-click-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
+    </audio>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="screens-section" id="timer-screen">
+                <h2 class="section-title">计时器界面</h2>
+                <div class="screen-container">
+                    <div class="screen-header">
+                        <div class="status-bar">
+                            <span class="time">9:41</span>
+                            <div class="status-icons">
+                                <span class="signal-icon"></span>
+                                <span class="wifi-icon"></span>
+                                <span class="battery-icon"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-content timer-content">
+                        <div class="timer-container">
+                            <div class="timer-header">
+                                <div class="mode-selector">
+                                    <div class="mode-option active">专注</div>
+                                    <div class="mode-option">短休息</div>
+                                    <div class="mode-option">长休息</div>
+                                </div>
+                                <div class="current-task">完成移动端界面设计</div>
+                            </div>
+                            
+                            <div class="timer-circle-container">
+                                <div class="timer-circle">
+                                    <div class="timer-progress" style="background: conic-gradient(var(--primary-color) 0%, transparent 0%);"></div>
+                                    <div class="timer-content-inner">
+                                        <div class="timer-time">25:00</div>
+                                        <div class="timer-label">剩余时间</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="timer-controls">
+                                <button class="timer-btn start" style="display: flex;">
+                                    <i class="ri-play-fill"></i>
+                                </button>
+                                <button class="timer-btn pause" style="display: none;">
+                                    <i class="ri-pause-fill"></i>
+                                </button>
+                                <button class="timer-btn stop">
+                                    <i class="ri-stop-fill"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="timer-info">
+                                <div>今日已完成 3 个番茄钟</div>
+                                <div class="timer-session-count">
+                                    <span class="session-dot completed"></span>
+                                    <span class="session-dot completed"></span>
+                                    <span class="session-dot completed"></span>
+                                    <span class="session-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-footer">
+                        <div class="tab-bar">
+                            <div class="tab-item active">
+                                <i class="ri-timer-line"></i>
+                                <span>计时</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-list-check"></i>
+                                <span>任务</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-bar-chart-line"></i>
+                                <span>统计</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-settings-line"></i>
+                                <span>设置</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="screens-section" id="tasks-screen">
+                <h2 class="section-title">任务列表界面</h2>
+                <div class="screen-container">
+                    <div class="screen-header">
+                        <div class="status-bar">
+                            <span class="time">9:41</span>
+                            <div class="status-icons">
+                                <span class="signal-icon"></span>
+                                <span class="wifi-icon"></span>
+                                <span class="battery-icon"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-content tasks-content">
+                        <div class="tasks-container">
+                            <div class="tasks-header">
+                                <div class="tasks-title">我的任务</div>
+                                <div class="tasks-filter">筛选</div>
+                            </div>
+                            
+                            <div class="tasks-list">
+                                <div class="task-item">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">完成移动端界面设计</div>
+                                        <div class="task-meta">
+                                            <div class="task-pomodoros">
+                                                <i class="ri-timer-line"></i>
+                                                <span>2/4</span>
+                                            </div>
+                                            <div class="task-date">今天</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="task-item completed">
+                                    <div class="task-checkbox checked"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">阅读设计文档</div>
+                                        <div class="task-meta">
+                                            <div class="task-pomodoros">
+                                                <i class="ri-timer-line"></i>
+                                                <span>3/3</span>
+                                            </div>
+                                            <div class="task-date">今天</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="task-item">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">准备团队会议演示文稿</div>
+                                        <div class="task-meta">
+                                            <div class="task-pomodoros">
+                                                <i class="ri-timer-line"></i>
+                                                <span>0/5</span>
+                                            </div>
+                                            <div class="task-date">明天</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="task-item">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">回复重要邮件</div>
+                                        <div class="task-meta">
+                                            <div class="task-pomodoros">
+                                                <i class="ri-timer-line"></i>
+                                                <span>0/2</span>
+                                            </div>
+                                            <div class="task-date">今天</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="add-task-btn">
+                                <i class="ri-add-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="screen-footer">
+                        <div class="tab-bar">
+                            <div class="tab-item">
+                                <i class="ri-timer-line"></i>
+                                <span>计时</span>
+                            </div>
+                            <div class="tab-item active">
+                                <i class="ri-list-check"></i>
+                                <span>任务</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-bar-chart-line"></i>
+                                <span>统计</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-settings-line"></i>
+                                <span>设置</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="screens-section" id="stats-screen">
+                <h2 class="section-title">统计界面</h2>
+                <div class="screen-container">
+                    <div class="screen-header">
+                        <div class="status-bar">
+                            <span class="time">9:41</span>
+                            <div class="status-icons">
+                                <span class="signal-icon"></span>
+                                <span class="wifi-icon"></span>
+                                <span class="battery-icon"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-content stats-content">
+                        <div class="stats-container">
+                            <div class="stats-header">
+                                <div class="stats-title">统计数据</div>
+                                <div class="stats-period-selector">
+                                    <div class="period-btn">今日</div>
+                                    <div class="period-btn active">本周</div>
+                                    <div class="period-btn">本月</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stats-summary">
+                                <div class="summary-item">
+                                    <div class="summary-value">27</div>
+                                    <div class="summary-label">番茄钟</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value">13.5</div>
+                                    <div class="summary-label">小时</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value">8</div>
+                                    <div class="summary-label">任务</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-title">每日专注时间（小时）</div>
+                                <div class="chart">
+                                    <div class="chart-bar" style="height: 40%;"></div>
+                                    <div class="chart-bar" style="height: 75%;"></div>
+                                    <div class="chart-bar" style="height: 50%;"></div>
+                                    <div class="chart-bar" style="height: 65%;"></div>
+                                    <div class="chart-bar" style="height: 30%;"></div>
+                                    <div class="chart-bar" style="height: 20%;"></div>
+                                    <div class="chart-bar" style="height: 60%;"></div>
+                                </div>
+                                <div class="chart-labels">
+                                    <div class="chart-label">一</div>
+                                    <div class="chart-label">二</div>
+                                    <div class="chart-label">三</div>
+                                    <div class="chart-label">四</div>
+                                    <div class="chart-label">五</div>
+                                    <div class="chart-label">六</div>
+                                    <div class="chart-label">日</div>
+                                </div>
+                            </div>
+                            
+                            <div class="achievements-section">
+                                <div class="achievements-title">我的成就</div>
+                                <div class="achievements-grid">
+                                    <div class="achievement-item">
+                                        <div class="achievement-icon">
+                                            <i class="ri-award-fill"></i>
+                                        </div>
+                                        <div class="achievement-title">专注达人</div>
+                                    </div>
+                                    <div class="achievement-item">
+                                        <div class="achievement-icon">
+                                            <i class="ri-calendar-check-fill"></i>
+                                        </div>
+                                        <div class="achievement-title">坚持不懈</div>
+                                    </div>
+                                    <div class="achievement-item">
+                                        <div class="achievement-icon locked">
+                                            <i class="ri-lock-fill"></i>
+                                        </div>
+                                        <div class="achievement-title">效率之王</div>
+                                    </div>
+                                    <div class="achievement-item">
+                                        <div class="achievement-icon locked">
+                                            <i class="ri-lock-fill"></i>
+                                        </div>
+                                        <div class="achievement-title">连续冲刺</div>
+                                    </div>
+                                    <div class="achievement-item">
+                                        <div class="achievement-icon locked">
+                                            <i class="ri-lock-fill"></i>
+                                        </div>
+                                        <div class="achievement-title">早起鸟</div>
+                                    </div>
+                                    <div class="achievement-item">
+                                        <div class="achievement-icon locked">
+                                            <i class="ri-lock-fill"></i>
+                                        </div>
+                                        <div class="achievement-title">夜猫子</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-footer">
+                        <div class="tab-bar">
+                            <div class="tab-item">
+                                <i class="ri-timer-line"></i>
+                                <span>计时</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-list-check"></i>
+                                <span>任务</span>
+                            </div>
+                            <div class="tab-item active">
+                                <i class="ri-bar-chart-line"></i>
+                                <span>统计</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-settings-line"></i>
+                                <span>设置</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="screens-section" id="settings-screen">
+                <h2 class="section-title">设置界面</h2>
+                <div class="screen-container">
+                    <div class="screen-header">
+                        <div class="status-bar">
+                            <span class="time">9:41</span>
+                            <div class="status-icons">
+                                <span class="signal-icon"></span>
+                                <span class="wifi-icon"></span>
+                                <span class="battery-icon"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-content settings-content">
+                        <div class="settings-container">
+                            <div class="settings-section">
+                                <div class="settings-section-title">时间设置</div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon time">
+                                            <i class="ri-time-line"></i>
+                                        </div>
+                                        <div class="settings-label">专注时长</div>
+                                    </div>
+                                    <div class="settings-value">25分钟</div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon time">
+                                            <i class="ri-rest-time-line"></i>
+                                        </div>
+                                        <div class="settings-label">短休息时长</div>
+                                    </div>
+                                    <div class="settings-value">5分钟</div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon time">
+                                            <i class="ri-hotel-bed-line"></i>
+                                        </div>
+                                        <div class="settings-label">长休息时长</div>
+                                    </div>
+                                    <div class="settings-value">15分钟</div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon time">
+                                            <i class="ri-refresh-line"></i>
+                                        </div>
+                                        <div class="settings-label">长休息间隔</div>
+                                    </div>
+                                    <div class="settings-value">4个番茄钟</div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <div class="settings-section-title">声音与通知</div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon sound">
+                                            <i class="ri-volume-up-line"></i>
+                                        </div>
+                                        <div class="settings-label">提示音</div>
+                                    </div>
+                                    <div class="settings-toggle active"></div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon notification">
+                                            <i class="ri-notification-line"></i>
+                                        </div>
+                                        <div class="settings-label">通知提醒</div>
+                                    </div>
+                                    <div class="settings-toggle active"></div>
+                                </div>
+                                <div class="settings-slider-container">
+                                    <div class="settings-slider-header">
+                                        <div class="slider-label">音量</div>
+                                        <div class="slider-value">70%</div>
+                                    </div>
+                                    <div class="settings-slider">
+                                        <div class="settings-slider-fill"></div>
+                                        <div class="settings-slider-thumb"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <div class="settings-section-title">外观</div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon theme">
+                                            <i class="ri-palette-line"></i>
+                                        </div>
+                                        <div class="settings-label">主题颜色</div>
+                                    </div>
+                                </div>
+                                <div class="theme-options">
+                                    <div class="theme-option theme-red selected"></div>
+                                    <div class="theme-option theme-green"></div>
+                                    <div class="theme-option theme-blue"></div>
+                                    <div class="theme-option theme-purple"></div>
+                                    <div class="theme-option theme-orange"></div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon theme">
+                                            <i class="ri-moon-line"></i>
+                                        </div>
+                                        <div class="settings-label">深色模式</div>
+                                    </div>
+                                    <div class="settings-toggle"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <div class="settings-section-title">其他</div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon">
+                                            <i class="ri-information-line"></i>
+                                        </div>
+                                        <div class="settings-label">关于</div>
+                                    </div>
+                                    <i class="ri-arrow-right-s-line" style="color: var(--text-tertiary);"></i>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-item-left">
+                                        <div class="settings-icon">
+                                            <i class="ri-question-line"></i>
+                                        </div>
+                                        <div class="settings-label">帮助与反馈</div>
+                                    </div>
+                                    <i class="ri-arrow-right-s-line" style="color: var(--text-tertiary);"></i>
+                                </div>
+                                
+                                <div class="settings-btn danger">
+                                    重置所有设置
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-footer">
+                        <div class="tab-bar">
+                            <div class="tab-item">
+                                <i class="ri-timer-line"></i>
+                                <span>计时</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-list-check"></i>
+                                <span>任务</span>
+                            </div>
+                            <div class="tab-item">
+                                <i class="ri-bar-chart-line"></i>
+                                <span>统计</span>
+                            </div>
+                            <div class="tab-item active">
+                                <i class="ri-settings-line"></i>
+                                <span>设置</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="screens-section" id="other-screens">
+                <h2 class="section-title">其他辅助界面</h2>
+                
+                <!-- 任务详情/编辑界面 -->
+                <div class="screen-wrapper">
+                    <h3 class="screen-label">任务详情/编辑界面</h3>
+                    <div class="screen-container">
+                        <div class="screen-header">
+                            <div class="status-bar">
+                                <span class="time">9:41</span>
+                                <div class="status-icons">
+                                    <span class="signal-icon"></span>
+                                    <span class="wifi-icon"></span>
+                                    <span class="battery-icon"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-content task-detail-content">
+                            <div class="task-detail-header">
+                                <div class="detail-back-btn">
+                                    <i class="ri-arrow-left-line"></i>
+                                    <span>返回</span>
+                                </div>
+                                <div class="detail-save-btn">保存</div>
+                            </div>
+                            <div class="task-detail-form">
+                                <div class="form-group">
+                                    <label class="form-label">任务名称</label>
+                                    <input type="text" class="form-input" value="完成移动端界面设计">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">任务描述</label>
+                                    <textarea class="form-input form-textarea">根据需求文档完成专注时钟App的所有界面设计，包括计时器、任务列表、统计和设置界面。</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">番茄钟数量</label>
+                                    <div class="pomodoro-counter">
+                                        <div class="counter-btn">
+                                            <i class="ri-subtract-line"></i>
+                                        </div>
+                                        <div class="counter-value">4</div>
+                                        <div class="counter-btn">
+                                            <i class="ri-add-line"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">优先级</label>
+                                    <select class="form-input">
+                                        <option>低</option>
+                                        <option selected>中</option>
+                                        <option>高</option>
+                                    </select>
+                                </div>
+                                <div class="task-detail-actions">
+                                    <button class="detail-action-btn primary">开始专注</button>
+                                    <button class="detail-action-btn secondary">标记为已完成</button>
+                                    <button class="detail-action-btn danger">删除任务</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 欢迎/引导页面 -->
+                <div class="screen-wrapper">
+                    <h3 class="screen-label">欢迎/引导页面</h3>
+                    <div class="screen-container">
+                        <div class="screen-header">
+                            <div class="status-bar">
+                                <span class="time">9:41</span>
+                                <div class="status-icons">
+                                    <span class="signal-icon"></span>
+                                    <span class="wifi-icon"></span>
+                                    <span class="battery-icon"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-content welcome-content">
+                            <div class="welcome-slide active">
+                                <div class="welcome-illustration">
+                                    <i class="ri-timer-line"></i>
+                                </div>
+                                <h1 class="welcome-title">欢迎使用专注时钟</h1>
+                                <p class="welcome-text">专注时钟使用番茄工作法，帮助你提高工作效率、专注完成任务。每个番茄工作周期包含25分钟的专注时间和5分钟的休息时间。</p>
+                                <div class="welcome-indicators">
+                                    <div class="welcome-indicator active"></div>
+                                    <div class="welcome-indicator"></div>
+                                    <div class="welcome-indicator"></div>
+                                </div>
+                                <div class="welcome-buttons">
+                                    <div class="welcome-btn secondary">跳过</div>
+                                    <div class="welcome-btn primary">下一步</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>专注时钟 iOS APP 原型 - 版本 1.0.0</p>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript 交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 切换主题功能
+            const themeSwitch = document.getElementById('theme-switch');
+            themeSwitch.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                themeSwitch.textContent = document.body.classList.contains('dark-theme') ? '切换到亮色' : '切换到暗色';
+            });
+            
+            // 模拟计时器功能
+            let timerRunning = false;
+            let timerInterval;
+            let currentTime = 25 * 60; // 初始时间25分钟（秒）
+            let maxTime = 25 * 60; // 记录最大时间，用于计算进度
+            let currentMode = 'focus'; // 当前模式：focus（专注）, shortBreak（短休息）, longBreak（长休息）
+            let soundEnabled = true; // 是否启用声音
+            let completedPomodoros = 3; // 今日已完成番茄钟数量（初始值设为3以匹配界面显示）
+            
+            const timerDisplay = document.querySelector('.timer-time');
+            const startBtn = document.querySelector('.timer-btn.start');
+            const pauseBtn = document.querySelector('.timer-btn.pause');
+            const stopBtn = document.querySelector('.timer-btn.stop');
+            const timerProgress = document.querySelector('.timer-progress');
+            const modeOptions = document.querySelectorAll('.mode-option');
+            const timerCompleteSound = document.getElementById('timer-complete-sound');
+            const buttonClickSound = document.getElementById('button-click-sound');
+            const soundToggle = document.querySelector('.settings-toggle'); // 获取设置中的声音开关
+            const completedCountDisplay = document.querySelector('.timer-info div'); // 显示已完成番茄钟数量的元素
+            const sessionDots = document.querySelectorAll('.session-dot'); // 番茄钟小点
+            
+            // 检查声音开关状态
+            if (soundToggle) {
+                soundEnabled = soundToggle.classList.contains('active');
+                soundToggle.addEventListener('click', function() {
+                    soundEnabled = this.classList.contains('active');
+                });
+            }
+            
+            // 播放声音的函数
+            function playSound(sound) {
+                if (soundEnabled && sound) {
+                    sound.currentTime = 0;
+                    sound.play().catch(e => console.log('播放声音失败:', e));
+                }
+            }
+            
+            // 初始化时间显示
+            if (timerDisplay) {
+                updateTimerDisplay();
+            }
+            
+            // 添加模式选择功能
+            if (modeOptions) {
+                modeOptions.forEach((option, index) => {
+                    option.addEventListener('click', function() {
+                        playSound(buttonClickSound);
+                        
+                        // 重置当前计时器
+                        resetTimer();
+                        
+                        // 移除所有模式的active类
+                        modeOptions.forEach(opt => opt.classList.remove('active'));
+                        // 添加当前选中模式的active类
+                        this.classList.add('active');
+                        
+                        // 根据选择的模式设置时间
+                        if (index === 0) { // 专注模式
+                            currentMode = 'focus';
+                            currentTime = 25 * 60;
+                            maxTime = 25 * 60;
+                        } else if (index === 1) { // 短休息
+                            currentMode = 'shortBreak';
+                            currentTime = 5 * 60;
+                            maxTime = 5 * 60;
+                            timerProgress.style.background = 'conic-gradient(var(--secondary-color) 0%, transparent 0%)';
+                        } else if (index === 2) { // 长休息
+                            currentMode = 'longBreak';
+                            currentTime = 15 * 60;
+                            maxTime = 15 * 60;
+                            timerProgress.style.background = 'conic-gradient(var(--secondary-color) 0%, transparent 0%)';
+                        }
+                        
+                        // 更新显示
+                        updateTimerDisplay();
+                    });
+                });
+            }
+            
+            if (startBtn && pauseBtn && stopBtn) {
+                startBtn.addEventListener('click', function() {
+                    playSound(buttonClickSound);
+                    startTimer();
+                });
+                pauseBtn.addEventListener('click', function() {
+                    playSound(buttonClickSound);
+                    pauseTimer();
+                });
+                stopBtn.addEventListener('click', function() {
+                    playSound(buttonClickSound);
+                    resetTimer();
+                });
+            }
+            
+            function startTimer() {
+                if (!timerRunning) {
+                    timerRunning = true;
+                    timerInterval = setInterval(updateTimer, 1000);
+                    startBtn.style.display = 'none';
+                    pauseBtn.style.display = 'flex';
+                }
+            }
+            
+            function pauseTimer() {
+                if (timerRunning) {
+                    timerRunning = false;
+                    clearInterval(timerInterval);
+                    pauseBtn.style.display = 'none';
+                    startBtn.style.display = 'flex';
+                }
+            }
+            
+            function resetTimer() {
+                timerRunning = false;
+                clearInterval(timerInterval);
+                
+                // 根据当前模式重置时间
+                if (currentMode === 'focus') {
+                    currentTime = 25 * 60;
+                    maxTime = 25 * 60;
+                    timerProgress.style.background = 'conic-gradient(var(--primary-color) 0%, transparent 0%)';
+                } else if (currentMode === 'shortBreak') {
+                    currentTime = 5 * 60;
+                    maxTime = 5 * 60;
+                    timerProgress.style.background = 'conic-gradient(var(--secondary-color) 0%, transparent 0%)';
+                } else if (currentMode === 'longBreak') {
+                    currentTime = 15 * 60;
+                    maxTime = 15 * 60;
+                    timerProgress.style.background = 'conic-gradient(var(--secondary-color) 0%, transparent 0%)';
+                }
+                
+                updateTimerDisplay();
+                pauseBtn.style.display = 'none';
+                startBtn.style.display = 'flex';
+            }
+            
+            function updateTimer() {
+                if (currentTime > 0) {
+                    currentTime--;
+                    updateTimerDisplay();
+                    
+                    // 更新进度环
+                    const progressPercentage = ((maxTime - currentTime) / maxTime) * 100;
+                    const progressColor = (currentMode === 'focus') ? 'var(--primary-color)' : 'var(--secondary-color)';
+                    timerProgress.style.background = `conic-gradient(${progressColor} ${progressPercentage}%, transparent 0%)`;
+                } else {
+                    // 计时结束
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                    
+                    // 播放结束提示音
+                    playSound(timerCompleteSound);
+                    
+                    // 如果是专注时间结束，增加完成的番茄钟数量
+                    if (currentMode === 'focus') {
+                        completedPomodoros++;
+                        updateCompletedPomodoros();
+                        
+                        alert('专注时间结束！休息一下吧。');
+                    } else {
+                        alert('休息时间结束！开始新的专注。');
+                    }
+                    
+                    resetTimer();
+                }
+            }
+            
+            // 更新完成的番茄钟显示
+            function updateCompletedPomodoros() {
+                // 更新文本显示
+                if (completedCountDisplay) {
+                    completedCountDisplay.textContent = `今日已完成 ${completedPomodoros} 个番茄钟`;
+                }
+                
+                // 更新小点显示
+                if (sessionDots && sessionDots.length > 0) {
+                    // 最多显示4个点
+                    const displayCount = Math.min(completedPomodoros, 4);
+                    
+                    // 更新小点状态
+                    sessionDots.forEach((dot, index) => {
+                        if (index < displayCount) {
+                            dot.classList.add('completed');
+                        } else {
+                            dot.classList.remove('completed');
+                        }
+                    });
+                }
+            }
+            
+            function updateTimerDisplay() {
+                const minutes = Math.floor(currentTime / 60);
+                const seconds = currentTime % 60;
+                
+                if (timerDisplay) {
+                    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }
+            
+            // 模拟任务列表交互
+            const taskCheckboxes = document.querySelectorAll('.task-checkbox');
+            if (taskCheckboxes) {
+                taskCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('click', function() {
+                        this.classList.toggle('checked');
+                        this.closest('.task-item').classList.toggle('completed');
+                    });
+                });
+            }
+            
+            // 模拟底部标签栏交互
+            const tabItems = document.querySelectorAll('.tab-item');
+            if (tabItems) {
+                tabItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        document.querySelectorAll('.tab-item').forEach(tab => {
+                            tab.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    });
+                });
+            }
+            
+            // 模拟设置界面交互
+            const settingsToggles = document.querySelectorAll('.settings-toggle');
+            if (settingsToggles) {
+                settingsToggles.forEach(toggle => {
+                    toggle.addEventListener('click', function() {
+                        this.classList.toggle('active');
+                    });
+                });
+            }
+            
+            // 模拟主题颜色选择
+            const themeOptions = document.querySelectorAll('.theme-option');
+            if (themeOptions) {
+                themeOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        document.querySelectorAll('.theme-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                        
+                        // 模拟主题颜色变化
+                        let newColor = '';
+                        if (this.classList.contains('theme-red')) newColor = '#FF6B6B';
+                        if (this.classList.contains('theme-green')) newColor = '#4ECDC4';
+                        if (this.classList.contains('theme-blue')) newColor = '#4A89DC';
+                        if (this.classList.contains('theme-purple')) newColor = '#AC92EC';
+                        if (this.classList.contains('theme-orange')) newColor = '#FFCE54';
+                        
+                        document.documentElement.style.setProperty('--primary-color', newColor);
+                    });
+                });
+            }
+            
+            // 为示例目的，添加一些动画效果
+            const animatedElements = document.querySelectorAll('.timer-circle, .task-item, .achievement-item');
+            if (animatedElements) {
+                animatedElements.forEach((element, index) => {
+                    setTimeout(() => {
+                        element.classList.add('fade-in');
+                    }, index * 100);
+                });
+            }
+            
+            // 模拟欢迎页面交互
+            const nextBtn = document.querySelector('.welcome-btn.primary');
+            const skipBtn = document.querySelector('.welcome-btn.secondary');
+            
+            if (nextBtn && skipBtn) {
+                // 简单模拟，无实际页面切换
+                nextBtn.addEventListener('click', function() {
+                    alert('这将进入下一个引导页面');
+                });
+                
+                skipBtn.addEventListener('click', function() {
+                    alert('这将跳过引导并进入主应用');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

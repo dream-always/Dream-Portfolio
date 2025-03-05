@@ -1,0 +1,19 @@
+/* 主样式文件 - 引入所有分离的样式 */
+
+/* 基础样式 */
+@import url('./base/variables.css');
+@import url('./base/reset.css');
+@import url('./base/typography.css');
+
+/* 布局样式 */
+@import url('./layout/container.css');
+
+/* 组件样式 */
+@import url('./components/navbar.css');
+@import url('./components/cards.css');
+@import url('./components/scrolling-section.css');
+
+/* 工具样式 */
+@import url('./utils/responsive.css');
+
+/* 其他自定义样式可以直接添加在这里 */ 

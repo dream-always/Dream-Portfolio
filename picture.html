@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美术作品 - Alisa</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/gallery.css">
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入Google字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            overflow: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            margin: auto;
+        }
+        
+        .modal-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-img {
+            transform: scale(1);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+        /* 系列过滤器样式 */
+        .series-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 35px auto;
+            max-width: 900px;
+            padding: 15px;
+            background-color: #f0f0f4;
+            border-radius: 20px;
+            box-shadow: inset 3px 3px 7px rgba(174, 174, 192, 0.2),
+                        inset -3px -3px 7px rgba(255, 255, 255, 0.7);
+        }
+
+        .filter-btn {
+            width: auto;
+            min-width: 45px;
+            height: 45px;
+            padding: 0 20px;
+            background-color: #f0f0f4;
+            border: none;
+            border-radius: 50px;
+            color: #777;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 新拟物化风格 */
+            box-shadow: 5px 5px 10px rgba(174, 174, 192, 0.4),
+                       -5px -5px 10px rgba(255, 255, 255, 0.9);
+        }
+
+        /* 为第一个按钮(全部作品)增加一些特殊样式 */
+        .filter-btn:first-child {
+            min-width: 110px;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 12px rgba(174, 174, 192, 0.4),
+                       -6px -6px 12px rgba(255, 255, 255, 0.9);
+            color: #6366f1;
+        }
+
+        .filter-btn.active {
+            background-color: #ffffff;
+            color: #6366f1;
+            font-weight: 600;
+            /* 按下效果 */
+            box-shadow: inset 4px 4px 6px rgba(174, 174, 192, 0.25),
+                        inset -4px -4px 6px rgba(255, 255, 255, 0.9);
+            transform: translateY(0);
+        }
+
+        /* 为动画添加过渡效果 */
+        .project-card {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .project-card.hidden {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .series-filter {
+                gap: 8px;
+            }
+            
+            .filter-btn {
+                font-size: 12px;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html">主页</a>
+                <a href="picture.html" class="active">美术作品</a>
+                <a href="video.html">影视作品</a>
+                <a href="uiux.html">产品原型 & 交互</a>
+            </div>
+            <div class="social-icons">
+                <a href="javascript:void(0);" class="social-icon" aria-label="Email" onclick="copyText('w13102101571@163.com', '邮箱')"><i class="fas fa-envelope"></i></a>
+                <a href="javascript:void(0);" class="social-icon" aria-label="Phone" onclick="copyText('13102101571', '电话')"><i class="fas fa-phone"></i></a>
+                <a href="https://github.com/dream-always" target="_blank" class="social-icon" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.douyin.com/user/self?from_tab_name=main&showTab=post" target="_blank" class="social-icon" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </nav>
+
+        <div class="series-filter">
+            <button class="filter-btn active" data-series="all">全部作品</button>
+            <button class="filter-btn" data-series="玄幻武侠">玄幻武侠</button>
+            <button class="filter-btn" data-series="手办模型">手办模型</button>
+            <button class="filter-btn" data-series="节日海报">节日海报</button>
+            <button class="filter-btn" data-series="创意卡通">创意卡通</button>
+            <button class="filter-btn" data-series="汽车展示海报">汽车展示海报</button>
+            <button class="filter-btn" data-series="摄影精修">摄影精修</button>
+        </div>
+
+        <div class="container gallery-page">
+            <!-- 作品展示区域 -->
+            <div class="gallery-grid">
+                <!-- 项目卡片1 - 汽车设计1 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.car1.png" alt="Car design project 1">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">汽车展示海报</h2>
+                        <p class="project-category">冰域猎影</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.car1.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片2 - 汽车设计2 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.car2.png" alt="Car design project 2">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">汽车展示海报</h2>
+                        <p class="project-category">极夜行者</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.car2.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片3 - 3D设计1 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.3D1.png" alt="3D design project 1">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">手办模型</h2>
+                        <p class="project-category">潮起惊鸿</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.3D1.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片4 - 3D设计2 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.3D2.png" alt="3D design project 2">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">手办模型</h2>
+                        <p class="project-category">灵珠化影</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.3D2.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片5 - 3D设计3 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.3D3.png" alt="3D design project 3">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">手办模型</h2>
+                        <p class="project-category">破世狂童</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.3D3.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片6 - 3D设计4 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.3D4.png" alt="3D design project 4">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">手办模型</h2>
+                        <p class="project-category">碧落幼麟</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.3D4.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片7 - H设计1 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.h1.png" alt="Human design project 1">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">节日海报</h2>
+                        <p class="project-category">新年</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.h1.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片8 - H设计2 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.h2.png" alt="Human design project 2">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">节日海报</h2>
+                        <p class="project-category">七夕</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.h2.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片9 - D设计1 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.d1.png" alt="Digital design project 1">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">创意卡通</h2>
+                        <p class="project-category">素锦流年</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.d1.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片10 - D设计2 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.d2.png" alt="Digital design project 2">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">创意卡通</h2>
+                        <p class="project-category">喵厨神技</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.d2.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片11 - X设计1 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.x1.png" alt="Experience design project 1">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">玄幻武侠</h2>
+                        <p class="project-category">夜魇修罗</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.x1.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片12 - X设计2 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.x2.png" alt="Experience design project 2">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">玄幻武侠</h2>
+                        <p class="project-category">霜刃流光</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.x2.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片13 - R设计1 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.r1.png" alt="Rebranding project 1">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">摄影精修</h2>
+                        <p class="project-category">暗香浮影</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.r1.png">点击看全图</a>
+                    </div>
+                </div>
+
+                <!-- 项目卡片14 - R设计2 -->
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/p.r2.png" alt="Rebranding project 2">
+                    </div>
+                    <div class="project-info">
+                        <h2 class="project-title">摄影精修</h2>
+                        <p class="project-category">未来序章</p>
+                        <a href="javascript:void(0);" class="show-more-btn" data-img="images/p.r2.png">点击看全图</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 模态框用于显示全图 -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <div class="modal-content">
+            <img class="modal-img" id="fullImage" src="" alt="Full size image">
+        </div>
+    </div>
+
+    <!-- JavaScript代码 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取模态框元素
+            const modal = document.getElementById('imageModal');
+            const fullImage = document.getElementById('fullImage');
+            const closeBtn = document.querySelector('.close-btn');
+            
+            // 获取所有"点击看全图"按钮
+            const showMoreBtns = document.querySelectorAll('.show-more-btn');
+            
+            // 为每个按钮添加点击事件
+            showMoreBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // 获取对应的图片路径
+                    const imgSrc = this.getAttribute('data-img');
+                    
+                    // 设置模态框中的图片源
+                    fullImage.src = imgSrc;
+                    
+                    // 显示模态框
+                    modal.style.display = 'block';
+                    // 添加active类以触发动画
+                    setTimeout(() => {
+                        modal.classList.add('active');
+                    }, 10);
+                });
+            });
+            
+            // 点击关闭按钮关闭模态框
+            closeBtn.addEventListener('click', closeModal);
+            
+            // 点击模态框背景也可以关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // 关闭模态框的函数
+            function closeModal() {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+            
+            // 添加ESC键关闭模态框功能
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'block') {
+                    closeModal();
+                }
+            });
+        });
+
+        // 系列过滤功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有过滤按钮和项目卡片
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            // 为每个过滤按钮添加点击事件
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的活动状态
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // 为当前点击的按钮添加活动状态
+                    this.classList.add('active');
+                    
+                    // 获取要过滤的系列名称
+                    const seriesFilter = this.getAttribute('data-series');
+                    
+                    // 过滤项目卡片
+                    projectCards.forEach(card => {
+                        const title = card.querySelector('.project-title').textContent;
+                        
+                        if (seriesFilter === 'all' || title === seriesFilter) {
+                            card.classList.remove('hidden');
+                            setTimeout(() => {
+                                card.style.display = 'block';
+                            }, 10);
+                        } else {
+                            card.classList.add('hidden');
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 400); // 与CSS过渡时间相匹配
+                        }
+                    });
+                });
+            });
+        });
+
+        // 复制文本到剪贴板的功能
+        function copyText(text, type) {
+            navigator.clipboard.writeText(text).then(function() {
+                // 创建提示元素
+                var tooltip = document.createElement('div');
+                tooltip.className = 'copy-tooltip';
+                tooltip.innerHTML = '已成功复制' + type;
+                
+                // 设置样式
+                tooltip.style.position = 'fixed';
+                tooltip.style.top = '60px';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translateX(-50%)';
+                tooltip.style.backgroundColor = '#6366f1';
+                tooltip.style.color = 'white';
+                tooltip.style.padding = '8px 16px';
+                tooltip.style.borderRadius = '4px';
+                tooltip.style.zIndex = '10000';
+                tooltip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                tooltip.style.opacity = '0';
+                tooltip.style.transition = 'opacity 0.3s ease';
+                
+                // 添加到body
+                document.body.appendChild(tooltip);
+                
+                // 显示提示
+                setTimeout(function() {
+                    tooltip.style.opacity = '1';
+                }, 10);
+                
+                // 2秒后移除提示
+                setTimeout(function() {
+                    tooltip.style.opacity = '0';
+                    setTimeout(function() {
+                        document.body.removeChild(tooltip);
+                    }, 300);
+                }, 2000);
+            }).catch(function(err) {
+                console.error('无法复制文本: ', err);
+                alert('复制失败，请手动复制: ' + text);
+            });
+        }
+    </script>
+</body>
+</html> 
