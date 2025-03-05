@@ -1,8 +1,9 @@
 {
+  "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/images/(.*)",
-      "destination": "/images/$1"
-    }
-  ]
+    { "source": "/images/(.*)", "destination": "/images/$1" }
+  ],
+  "static": {
+    "directory": "images"
+  }
 }
