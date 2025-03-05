@@ -1,6 +1,8 @@
 {
-  "public": "public",
   "rewrites": [
-    { "source": "/images/(.*)", "destination": "/public/images/$1" }
+    {
+      "source": "/images/(.*)",
+      "destination": "/public/images/$1"
+    }
   ]
 }
